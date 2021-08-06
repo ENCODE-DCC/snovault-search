@@ -4,7 +4,7 @@ from pyramid.httpexceptions import HTTPBadRequest
 
 
 def test_searches_decorators_assert_condition_returned():
-    from snovault.elasticsearch.searches.decorators import assert_condition_returned
+    from snosearch.decorators import assert_condition_returned
     @assert_condition_returned(condition=lambda x: any(n > 1 for n in x), error_message='Invalid value:')
     def dummy_func(values):
         return values
@@ -17,7 +17,7 @@ def test_searches_decorators_assert_condition_returned():
 
 
 def test_searches_decorators_assert_none_returned():
-    from snovault.elasticsearch.searches.decorators import assert_none_returned
+    from snosearch.decorators import assert_none_returned
     @assert_none_returned(error_message='Invalid type')
     def dummy_func(values):
         return values
@@ -29,7 +29,7 @@ def test_searches_decorators_assert_none_returned():
 
 
 def test_searches_decorators_assert_one_or_none_returned():
-    from snovault.elasticsearch.searches.decorators import assert_one_or_none_returned
+    from snosearch.decorators import assert_one_or_none_returned
     @assert_one_or_none_returned(error_message='Multiple values invalid')
     def dummy_func(values):
         return values
@@ -44,7 +44,7 @@ def test_searches_decorators_assert_one_or_none_returned():
 
 
 def test_searches_decorators_assert_one_returned():
-    from snovault.elasticsearch.searches.decorators import assert_one_returned
+    from snosearch.decorators import assert_one_returned
     @assert_one_returned(error_message='Need one value')
     def dummy_func(values):
         return values
@@ -60,7 +60,7 @@ def test_searches_decorators_assert_one_returned():
 
 
 def test_searches_decorators_assert_something_returned():
-    from snovault.elasticsearch.searches.decorators import assert_something_returned
+    from snosearch.decorators import assert_something_returned
     @assert_something_returned(error_message='Nothing returnedd')
     def dummy_func(values):
         return values
@@ -75,7 +75,7 @@ def test_searches_decorators_assert_something_returned():
 
 
 def test_searches_decorators_deduplicate():
-    from snovault.elasticsearch.searches.decorators import deduplicate
+    from snosearch.decorators import deduplicate
     def dummy_func(values):
         return values
     dummy_func = deduplicate(dummy_func)
@@ -95,7 +95,7 @@ def test_searches_decorators_deduplicate():
 
 
 def test_searces_decorators_remove_from_return():
-    from snovault.elasticsearch.searches.decorators import remove_from_return
+    from snosearch.decorators import remove_from_return
     @remove_from_return(keys=['del_me'], values=[None])
     def dummy_func(value_dict):
         return value_dict
@@ -111,7 +111,7 @@ def test_searces_decorators_remove_from_return():
 
 
 def test_searces_decorators_catch_and_swap():
-    from snovault.elasticsearch.searches.decorators import catch_and_swap
+    from snosearch.decorators import catch_and_swap
     @catch_and_swap()
     def dummy_func():
         raise ValueError
@@ -141,7 +141,7 @@ def test_searces_decorators_catch_and_swap():
 
 
 def test_searces_decorators_conditional_cache():
-    from snovault.elasticsearch.searches.decorators import conditional_cache
+    from snosearch.decorators import conditional_cache
     from functools import partial
     cache = {}
     context = None
