@@ -6,9 +6,7 @@ from antlr4 import IllegalStateException
 from lucenequery import dialects
 from lucenequery.prefixfields import prefixfields
 from pyramid.httpexceptions import HTTPBadRequest
-from snovault.elasticsearch import ELASTIC_SEARCH
-from snovault.elasticsearch.interfaces import RESOURCES_INDEX
-from snovault.interfaces import TYPES
+
 
 from .configs import ExistsAggregationConfig
 from .configs import TermsAggregationConfig
@@ -43,6 +41,7 @@ from .interfaces import COLON
 from .interfaces import COLUMNS
 from .interfaces import DASH
 from .interfaces import DESC
+from .interfaces import ELASTIC_SEARCH
 from .interfaces import EMBEDDED
 from .interfaces import EMBEDDED_TYPE
 from .interfaces import EXCLUDE
@@ -74,6 +73,7 @@ from .interfaces import PROPERTIES
 from .interfaces import QUERY_STRING
 from .interfaces import RANGE
 from .interfaces import RANGES
+from .interfaces import RESOURCES_INDEX
 from .interfaces import _SCORE
 from .interfaces import SEARCH_AUDIT
 from .interfaces import SEARCH_CONFIG
@@ -83,6 +83,7 @@ from .interfaces import STATS
 from .interfaces import TITLE
 from .interfaces import TERMS
 from .interfaces import TOP_HITS
+from .interfaces import TYPES
 from .interfaces import TYPE_KEY
 from .interfaces import WILDCARD
 from .interfaces import X
