@@ -2,25 +2,25 @@ import pytest
 
 
 def test_searches_configs_config_init():
-    from snovault.elasticsearch.searches.configs import Config
+    from snosearch.configs import Config
     c = Config()
     assert isinstance(c, Config)
 
 
 def test_searches_configs_terms_aggregation_config_init():
-    from snovault.elasticsearch.searches.configs import TermsAggregationConfig
+    from snosearch.configs import TermsAggregationConfig
     tac = TermsAggregationConfig()
     assert isinstance(tac, TermsAggregationConfig)
 
 
 def test_searches_configs_exists_aggregation_config_init():
-    from snovault.elasticsearch.searches.configs import ExistsAggregationConfig
+    from snosearch.configs import ExistsAggregationConfig
     eac = ExistsAggregationConfig()
     assert isinstance(eac, ExistsAggregationConfig)
 
 
 def test_searches_configs_config_allowed_kwargs():
-    from snovault.elasticsearch.searches.configs import Config
+    from snosearch.configs import Config
     c = Config()
     assert c._allowed_kwargs == []
     c = Config(allowed_kwargs=['size'])
@@ -28,7 +28,7 @@ def test_searches_configs_config_allowed_kwargs():
 
 
 def test_searches_configs_config_kwargs():
-    from snovault.elasticsearch.searches.configs import Config
+    from snosearch.configs import Config
     c = Config()
     assert c._kwargs == {}
     c = Config(other_thing='abc', something_else=True)
@@ -36,7 +36,7 @@ def test_searches_configs_config_kwargs():
 
 
 def test_searches_configs_config_allowed_kwargs_and_kwargs():
-    from snovault.elasticsearch.searches.configs import Config
+    from snosearch.configs import Config
     c = Config(
         allowed_kwargs=['first_thing'],
         other_thing='abc',
@@ -47,7 +47,7 @@ def test_searches_configs_config_allowed_kwargs_and_kwargs():
 
 
 def test_searches_configs_config_filtered_kwargs():
-    from snovault.elasticsearch.searches.configs import Config
+    from snosearch.configs import Config
     c = Config()
     assert c._filtered_kwargs() == {}
     c = Config(
@@ -71,7 +71,7 @@ def test_searches_configs_config_filtered_kwargs():
 
 
 def test_searches_configs_config_iter():
-    from snovault.elasticsearch.searches.configs import Config
+    from snosearch.configs import Config
     c = Config(
         allowed_kwargs=['first_thing', 'other_thing'],
         other_thing='abc',
@@ -81,7 +81,7 @@ def test_searches_configs_config_iter():
 
 
 def test_searches_configs_config_len():
-    from snovault.elasticsearch.searches.configs import Config
+    from snosearch.configs import Config
     c = Config(
         allowed_kwargs=['first_thing', 'other_thing'],
         other_thing='abc',
@@ -91,7 +91,7 @@ def test_searches_configs_config_len():
 
 
 def test_searches_configs_config_getitem():
-    from snovault.elasticsearch.searches.configs import Config
+    from snosearch.configs import Config
     c = Config(
         allowed_kwargs=['first_thing', 'other_thing'],
         other_thing='abc',
@@ -103,8 +103,8 @@ def test_searches_configs_config_getitem():
 
 
 def test_searches_configs_terms_aggregation_config_allowed_kwargs():
-    from snovault.elasticsearch.searches.configs import TermsAggregationConfig
-    from snovault.elasticsearch.searches.defaults import DEFAULT_TERMS_AGGREGATION_KWARGS
+    from snosearch.configs import TermsAggregationConfig
+    from snosearch.defaults import DEFAULT_TERMS_AGGREGATION_KWARGS
     tac = TermsAggregationConfig()
     assert tac._allowed_kwargs == ['size', 'exclude', 'missing', 'include', 'aggs']
     tac = TermsAggregationConfig(allowed_kwargs=['size'])
@@ -112,8 +112,8 @@ def test_searches_configs_terms_aggregation_config_allowed_kwargs():
 
 
 def test_searches_configs_exists_aggregatin_config_allowed_kwargs():
-    from snovault.elasticsearch.searches.configs import ExistsAggregationConfig
-    from snovault.elasticsearch.searches.defaults import DEFAULT_TERMS_AGGREGATION_KWARGS
+    from snosearch.configs import ExistsAggregationConfig
+    from snosearch.defaults import DEFAULT_TERMS_AGGREGATION_KWARGS
     eac = ExistsAggregationConfig()
     assert eac._allowed_kwargs == []
     eac = ExistsAggregationConfig(allowed_kwargs=['size'])
@@ -121,7 +121,7 @@ def test_searches_configs_exists_aggregatin_config_allowed_kwargs():
 
 
 def test_searches_configs_terms_aggregation_config_pass_filtered_kwargs():
-    from snovault.elasticsearch.searches.configs import TermsAggregationConfig
+    from snosearch.configs import TermsAggregationConfig
     def return_kwargs(**kwargs):
         return kwargs
     kwargs = return_kwargs(**TermsAggregationConfig({}))
@@ -141,7 +141,7 @@ def test_searches_configs_terms_aggregation_config_pass_filtered_kwargs():
 
 
 def test_searches_configs_exists_aggregation_config_pass_filtered_kwargs():
-    from snovault.elasticsearch.searches.configs import ExistsAggregationConfig
+    from snosearch.configs import ExistsAggregationConfig
     def return_kwargs(**kwargs):
         return kwargs
     kwargs = return_kwargs(**ExistsAggregationConfig({}))
@@ -160,13 +160,13 @@ def test_searches_configs_exists_aggregation_config_pass_filtered_kwargs():
 
 
 def test_searches_configs_sorted_tuple_map_init(dummy_request):
-    from snovault.elasticsearch.searches.configs import SortedTupleMap
+    from snosearch.configs import SortedTupleMap
     s = SortedTupleMap()
     assert isinstance(s, SortedTupleMap)
 
 
 def test_searches_configs_sorted_tuple_map_convert_key_to_sorted_tuple(dummy_request):
-    from snovault.elasticsearch.searches.configs import SortedTupleMap
+    from snosearch.configs import SortedTupleMap
     s = SortedTupleMap()
     assert s._convert_key_to_sorted_tuple('Experiment') == ('Experiment',)
     assert s._convert_key_to_sorted_tuple(['File' ,'Experiment']) == ('Experiment', 'File')
@@ -174,7 +174,7 @@ def test_searches_configs_sorted_tuple_map_convert_key_to_sorted_tuple(dummy_req
 
 
 def test_searches_configs_sorted_tuple_map_add_drop_get_and_as_dict(dummy_request):
-    from snovault.elasticsearch.searches.configs import SortedTupleMap
+    from snosearch.configs import SortedTupleMap
     s = SortedTupleMap()
     s['x'] = ['y']
     assert s.as_dict() == {('x',): ['y']}
@@ -194,7 +194,7 @@ def test_searches_configs_sorted_tuple_map_add_drop_get_and_as_dict(dummy_reques
 
 
 def test_searches_configs_sorted_tuple_map_contains(dummy_request):
-    from snovault.elasticsearch.searches.configs import SortedTupleMap
+    from snosearch.configs import SortedTupleMap
     s = SortedTupleMap()
     assert 'x' not in s
     s['x'] = [1, 2, 3]
@@ -207,7 +207,7 @@ def test_searches_configs_sorted_tuple_map_contains(dummy_request):
 
 
 def test_searches_configs_search_config_registry(dummy_request):
-    from snovault.elasticsearch.searches.interfaces import SEARCH_CONFIG
+    from snosearch.interfaces import SEARCH_CONFIG
     config = dummy_request.registry[SEARCH_CONFIG].get('TestingSearchSchema')
     assert list(config.facets.items()) == [
         ('status', {'title': 'Status', 'open_on_load': True}),
@@ -234,7 +234,7 @@ def test_searches_configs_search_config_registry(dummy_request):
 
 
 def test_searches_configs_search_config_registry_add_aliases_and_defaults(dummy_request):
-    from snovault.elasticsearch.searches.interfaces import SEARCH_CONFIG
+    from snosearch.interfaces import SEARCH_CONFIG
     search_registry = dummy_request.registry[SEARCH_CONFIG]
     config = search_registry.get('TestingSearchSchema')
     assert list(config.facets.items()) == [
@@ -263,7 +263,7 @@ def test_searches_configs_search_config_registry_add_aliases_and_defaults(dummy_
 
 
 def test_searches_configs_search_config_registry_resolve_config_names(dummy_request):
-    from snovault.elasticsearch.searches.interfaces import SEARCH_CONFIG
+    from snosearch.interfaces import SEARCH_CONFIG
     search_registry = dummy_request.registry[SEARCH_CONFIG]
     registry = search_registry.registry
     config_names = search_registry._resolve_config_names(['TestingSearchSchema'])
@@ -301,7 +301,7 @@ def test_searches_configs_search_config_registry_resolve_config_names(dummy_requ
 
 
 def test_searches_configs_search_config_registry_get_configs_by_names(dummy_request):
-    from snovault.elasticsearch.searches.interfaces import SEARCH_CONFIG
+    from snosearch.interfaces import SEARCH_CONFIG
     search_registry = dummy_request.registry[SEARCH_CONFIG]
     configs = search_registry.get_configs_by_names(['TestingSearchSchema'])
     assert len(configs) == 1
@@ -311,8 +311,8 @@ def test_searches_configs_search_config_registry_get_configs_by_names(dummy_requ
     ]
 
 def test_searches_configs_search_config_can_update():
-    from snovault.elasticsearch.searches.configs import SearchConfig
-    from snovault.elasticsearch.searches.configs import SearchConfigRegistry
+    from snosearch.configs import SearchConfig
+    from snosearch.configs import SearchConfigRegistry
     registry = SearchConfigRegistry()
     config = SearchConfig(
         'my-custom-config',
@@ -341,26 +341,3 @@ def test_searches_configs_search_config_can_update():
     assert registry.get('my-custom-config', empty).facets == {'c': 'd'}
     assert registry.get('my-custom-config', empty).columns == ['x', 'y']
     assert registry.get('my-custom-config', empty).boost_values == {'t': 'z'}
-
-
-def included(config):
-    def new_item_search_config():
-        return {
-            'facets': {'a': 'b'}
-        }
-    config.register_search_config(
-        'OtherConfigItem', new_item_search_config
-    )
-    
-
-def test_searches_configs_search_config_decorator(config, dummy_request):
-    from snovault.elasticsearch.searches.interfaces import SEARCH_CONFIG
-    from snovault.elasticsearch.searches.configs import search_config
-    assert dummy_request.registry[SEARCH_CONFIG].get('TestConfigItem').facets == {'a': 'b'}
-    config.include('snovault.elasticsearch.searches.configs')
-    config.include(included)
-    config.commit()
-    assert config.registry[SEARCH_CONFIG].registry.get('OtherConfigItem').facets == {'a': 'b'}
-    config.register_search_config('OtherConfigItem', lambda: {'facets': {'c': 'd'}})
-    config.commit()
-    assert config.registry[SEARCH_CONFIG].registry.get('OtherConfigItem').facets == {'c': 'd'}
