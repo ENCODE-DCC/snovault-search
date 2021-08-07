@@ -1,10 +1,11 @@
 class TypeAdapter:
 
     def __init__(self, **kwargs):
-        self.schema = kwargs.pop('schema')
-        self.subtypes = kwargs.pop('subtypes', ['Item'])
-        self.item_type = kwargs.pop('item_type')
+        self.schema = kwargs.pop('schema', None)
+        self.subtypes = kwargs.pop('subtypes', [])
+        self.item_type = kwargs.pop('item_type', None)
         self.factory = self
+        self.type_info = self
         self.__dict__.update(kwargs)
 
 

@@ -2,15 +2,24 @@ import pytest
 
 
 @pytest.fixture
-def dummy_registry(testing_types):
+def dummy_registry(testing_types, testing_configs):
     from snosearch.adapters.types import register_type_from_dict
+    from snosearch.adapters.configs import register_search_config_from_dict
+    from snosearch.configs import SearchConfigRegistry
     from snosearch.interfaces import TYPES
+    from snosearch.interfaces import ELASTIC_SEARCH
+    from snosearch.interfaces import SEARCH_CONFIG
     from pyramid.registry import Registry
     registry = Registry()
     type_registry = {}
     for type_dict in testing_types:
         register_type_from_dict(type_registry, type_dict)
     registry[TYPES] = type_registry
+    registry[ELASTIC_SEARCH] = None
+    config_registry = SearchConfigRegistry()
+    for config_dict in testing_configs:
+        register_search_config_from_dict(config_registry, config_dict)
+    registry[SEARCH_CONFIG] = config_registry
     return registry
 
 
@@ -244,6 +253,26 @@ def testing_search_schema_special_facets_type():
     }
 
 
+@pytest.fixture()
+def testing_item_type():
+    return {
+        'name': 'Item',
+        'subtypes': [
+            'TestingServerDefault',
+            'TestingCustomEmbedSource',
+            'TestingCustomEmbedTarget',
+            'TestingPostPutPatch',
+            'TestingDependencies',
+            'TestingLinkTarget',
+            'TestingLinkSource',
+            'TestingSearchSchema',
+            'TestingDownload',
+            'TestingBadAccession',
+            'TestingSearchSchemaSpecialFacets',
+        ],
+    }
+
+
 @pytest.fixture
 def test_config_item_search_config():
     return {
@@ -253,9 +282,23 @@ def test_config_item_search_config():
 
 
 @pytest.fixture
-def testing_types(testing_search_schema_type, testing_post_put_patch_type, testing_search_schema_special_facets_type):
+def testing_types(testing_search_schema_type, testing_post_put_patch_type, testing_search_schema_special_facets_type, testing_item_type):
     return [
         testing_search_schema_type,
         testing_post_put_patch_type,
         testing_search_schema_special_facets_type,
+        testing_item_type,
+    ]
+
+
+@pytest.fixture
+def testing_configs(test_config_item_search_config, testing_types):
+    return [
+        test_config_item_search_config,
+    ] + [
+        {
+            'name': testing_type['name'],
+            **testing_type.get('schema', {}),
+        }
+        for testing_type in testing_types
     ]

@@ -4028,7 +4028,8 @@ def test_searches_queries_cached_facet_query_factory_build_query(dummy_request):
 
 def test_searches_queries_collection_search_query_factory_with_facets_get_item_types(params_parser):
     from snosearch.queries import CollectionSearchQueryFactoryWithFacets
-    context = params_parser._request.registry['collections']['TestingSearchSchema']
+    from snosearch.interfaces import TYPES
+    context = params_parser._request.registry[TYPES]['TestingSearchSchema']
     params_parser._request.context = context
     cs = CollectionSearchQueryFactoryWithFacets(params_parser)
     item_types = cs._get_item_types()
