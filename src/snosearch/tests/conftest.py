@@ -39,6 +39,19 @@ def testing_search_schema_type():
         'schema': {
             'type': 'object',
             'properties': {
+                '@id': {
+                    'notSubmittable': True,
+                    'type': 'string',
+                    'title': 'ID'
+                },
+                '@type': {
+                    'notSubmittable': True,
+                    'type': 'array',
+                    'items': {
+                        'type': 'string'
+                    },
+                    'title': 'Type'
+                },
                 'name': {
                     'type': 'string',
                     'uniqueKey': True,
@@ -138,6 +151,19 @@ def testing_post_put_patch_type():
             'required': ['required'],
             'type': 'object',
             'properties': {
+                '@id': {
+                    'notSubmittable': True,
+                    'type': 'string',
+                    'title': 'ID'
+                },
+                '@type': {
+                    'notSubmittable': True,
+                    'type': 'array',
+                    'items': {
+                        'type': 'string'
+                    },
+                    'title': 'Type'
+                },
                 "schema_version": {
                     "type": "string",
                     "pattern": "^\\d+(\\.\\d+)*$",
@@ -193,6 +219,19 @@ def testing_search_schema_special_facets_type():
         'schema':  {
             'type': 'object',
             'properties': {
+                '@id': {
+                    'notSubmittable': True,
+                    'type': 'string',
+                    'title': 'ID'
+                },
+                '@type': {
+                    'notSubmittable': True,
+                    'type': 'array',
+                    'items': {
+                        'type': 'string'
+                    },
+                    'title': 'Type'
+                },
                 'name': {
                     'type': 'string',
                     'uniqueKey': True,
@@ -254,6 +293,72 @@ def testing_search_schema_special_facets_type():
 
 
 @pytest.fixture()
+def testing_download_type():
+    return {
+        'name': 'TestingDownload',
+        'item_type': 'testing_download',
+        'schema': {
+            'type': 'object',
+            'properties': {
+                '@id': {
+                    'notSubmittable': True,
+                    'type': 'string',
+                    'title': 'ID'
+                },
+                '@type': {
+                    'notSubmittable': True,
+                    'type': 'array',
+                    'items': {
+                        'type': 'string'
+                    },
+                    'title': 'Type'
+                },
+                'attachment': {
+                    'type': 'object',
+                    'attachment': True,
+                    'properties': {
+                        'type': {
+                            'type': 'string',
+                            'enum': ['image/png'],
+                        }
+                    }
+                },
+                'attachment2': {
+                    'type': 'object',
+                    'attachment': True,
+                    'properties': {
+                        'type': {
+                            'type': 'string',
+                            'enum': ['image/png'],
+                        }
+                    }
+                },
+                'attachment3': {
+                    'type': 'object',
+                    'attachment': True,
+                    'properties': {
+                        'type': {
+                            'type': 'string',
+                            'enum': ['application/json'],
+                        }
+                    }
+                },
+                'attachment4': {
+                    'type': 'object',
+                    'attachment': True,
+                    'properties': {
+                        'type': {
+                            'type': 'string',
+                            'enum': ['application/json'],
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+@pytest.fixture()
 def testing_item_type():
     return {
         'name': 'Item',
@@ -282,11 +387,12 @@ def test_config_item_search_config():
 
 
 @pytest.fixture
-def testing_types(testing_search_schema_type, testing_post_put_patch_type, testing_search_schema_special_facets_type, testing_item_type):
+def testing_types(testing_search_schema_type, testing_post_put_patch_type, testing_search_schema_special_facets_type, testing_download_type, testing_item_type):
     return [
         testing_search_schema_type,
         testing_post_put_patch_type,
         testing_search_schema_special_facets_type,
+        testing_download_type,
         testing_item_type,
     ]
 
