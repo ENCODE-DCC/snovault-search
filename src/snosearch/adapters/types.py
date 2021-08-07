@@ -11,4 +11,7 @@ class TypeAdapter:
 
 def register_type_from_dict(type_registry, type_dict):
     name = type_dict['name']
+    item_type = type_dict.get('item_type')
     type_registry[name] = TypeAdapter(**type_dict)
+    if item_type:
+        type_registry[item_type] = type_registry[name]
