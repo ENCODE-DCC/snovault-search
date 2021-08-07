@@ -2,14 +2,14 @@ import pytest
 
 
 def test_searches_responses_fielded_response_init():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
+    from snosearch.responses import FieldedResponse
     fr = FieldedResponse()
     assert isinstance(fr, FieldedResponse)
 
 
 def test_searches_responses_fielded_response_validate_response_fields():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.fields import ResponseField
+    from snosearch.responses import FieldedResponse
+    from snosearch.fields import ResponseField
     rf = ResponseField()
     FieldedResponse(response_fields=[rf])
     class NewResponseField(ResponseField):
@@ -26,7 +26,7 @@ def test_searches_responses_fielded_response_validate_response_fields():
 
 def test_searches_responses_fielded_response_ordered_response():
     from collections import OrderedDict
-    from snovault.elasticsearch.searches.responses import FieldedResponse
+    from snosearch.responses import FieldedResponse
     fr = FieldedResponse()
     fr.response = {'b': 2, 'a': 1}
     ordered_dict = OrderedDict([('a', 1), ('b', 2)])
@@ -35,8 +35,8 @@ def test_searches_responses_fielded_response_ordered_response():
 
 
 def test_searches_responses_fielded_response_get_request(dummy_request):
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.parsers import ParamsParser
+    from snosearch.responses import FieldedResponse
+    from snosearch.parsers import ParamsParser
     fr = FieldedResponse()
     assert fr.get_request() is None
     dummy_request.body = b'abc'
@@ -51,8 +51,8 @@ def test_searches_responses_fielded_response_get_request(dummy_request):
 
 
 def test_searches_responses_fielded_response_get_or_create_response(dummy_request):
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.parsers import ParamsParser
+    from snosearch.responses import FieldedResponse
+    from snosearch.parsers import ParamsParser
     from pyramid.response import Response
     fr = FieldedResponse()
     response = fr.get_or_create_response()
@@ -68,8 +68,8 @@ def test_searches_responses_fielded_response_get_or_create_response(dummy_reques
 
 
 def test_searches_responses_fielded_response_is_request_from_embed(dummy_request):
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.parsers import ParamsParser
+    from snosearch.responses import FieldedResponse
+    from snosearch.parsers import ParamsParser
     fr = FieldedResponse()
     assert not fr._is_request_from_embed()
     fr = FieldedResponse(
@@ -88,7 +88,7 @@ def test_searches_responses_fielded_response_is_request_from_embed(dummy_request
 
 
 def test_searches_responses_fielded_response_is_response_with_generator(dummy_request):
-    from snovault.elasticsearch.searches.responses import FieldedResponse
+    from snosearch.responses import FieldedResponse
     fr = FieldedResponse()
     assert not fr._is_response_with_generator()
     fr.response = {'a': [1, 2, 3]}
@@ -100,8 +100,8 @@ def test_searches_responses_fielded_response_is_response_with_generator(dummy_re
 
 
 def test_searches_responses_fielded_response_should_stream_response(dummy_request):
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.parsers import ParamsParser
+    from snosearch.responses import FieldedResponse
+    from snosearch.parsers import ParamsParser
     fr = FieldedResponse()
     assert not fr._should_stream_response()
     fr = FieldedResponse(
@@ -124,10 +124,10 @@ def test_searches_responses_fielded_response_should_stream_response(dummy_reques
 
 
 def test_searches_responses_fielded_response_response_factory(dummy_request):
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import InMemoryResponse
-    from snovault.elasticsearch.searches.responses import StreamedResponse
-    from snovault.elasticsearch.searches.parsers import ParamsParser
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import InMemoryResponse
+    from snosearch.responses import StreamedResponse
+    from snosearch.parsers import ParamsParser
     fr = FieldedResponse()
     fr.response = {'a': 1}
     assert isinstance(fr._response_factory(), InMemoryResponse)
@@ -151,9 +151,9 @@ def test_searches_responses_fielded_response_response_factory(dummy_request):
 
 
 def test_searches_responses_fielded_response_render(dummy_request):
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import StreamedResponse
-    from snovault.elasticsearch.searches.parsers import ParamsParser
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import StreamedResponse
+    from snosearch.parsers import ParamsParser
     from pyramid.response import Response
     fr = FieldedResponse()
     fr.response = {'a': 1}
@@ -178,27 +178,27 @@ def test_searches_responses_fielded_response_render(dummy_request):
 
 
 def test_searches_responses_query_response_init():
-    from snovault.elasticsearch.searches.responses import QueryResponse
+    from snosearch.responses import QueryResponse
     qr = QueryResponse([], [])
     assert isinstance(qr, QueryResponse)
 
 
 def test_searches_responses_basic_query_response_with_facets_init():
-    from snovault.elasticsearch.searches.responses import BasicQueryResponseWithFacets
+    from snosearch.responses import BasicQueryResponseWithFacets
     bqr = BasicQueryResponseWithFacets([], [])
     assert isinstance(bqr, BasicQueryResponseWithFacets)
 
 
 def test_searches_responses_raw_query_response_with_aggs_init():
-    from snovault.elasticsearch.searches.responses import RawQueryResponseWithAggs
+    from snosearch.responses import RawQueryResponseWithAggs
     rqr = RawQueryResponseWithAggs([], [])
     assert isinstance(rqr, RawQueryResponseWithAggs)
 
 
 def test_searches_responses_basic_matrix_response_with_facets_init():
-    from snovault.elasticsearch.searches.responses import BasicMatrixResponseWithFacets
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
-    from snovault.elasticsearch.searches.mixins import AggsToMatrixMixin
+    from snosearch.responses import BasicMatrixResponseWithFacets
+    from snosearch.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToMatrixMixin
     bmr = BasicMatrixResponseWithFacets([], [])
     assert isinstance(bmr, BasicMatrixResponseWithFacets)
     assert isinstance(bmr, AggsToFacetsMixin)
@@ -206,9 +206,9 @@ def test_searches_responses_basic_matrix_response_with_facets_init():
 
 
 def test_searches_responses_audit_matrix_response_with_facets_init():
-    from snovault.elasticsearch.searches.responses import AuditMatrixResponseWithFacets
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
-    from snovault.elasticsearch.searches.mixins import AuditAggsToMatrixMixin
+    from snosearch.responses import AuditMatrixResponseWithFacets
+    from snosearch.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AuditAggsToMatrixMixin
     amr = AuditMatrixResponseWithFacets([], [])
     assert isinstance(amr, AuditMatrixResponseWithFacets)
     assert isinstance(amr, AggsToFacetsMixin)
@@ -216,16 +216,16 @@ def test_searches_responses_audit_matrix_response_with_facets_init():
 
 
 def test_searches_responses_streamed_response_init():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import StreamedResponse
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import StreamedResponse
     fr = FieldedResponse()
     sr = StreamedResponse(fr)
     assert isinstance(sr, StreamedResponse)
 
 
 def test_searches_responses_streamed_response_characters():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import StreamedResponse
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import StreamedResponse
     fr = FieldedResponse()
     sr = StreamedResponse(fr)
     assert sr._start_dict() == '{'
@@ -237,8 +237,8 @@ def test_searches_responses_streamed_response_characters():
 
 
 def test_searches_responses_streamed_response_to_json_string():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import StreamedResponse
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import StreamedResponse
     fr = FieldedResponse()
     sr = StreamedResponse(fr)
     assert sr._to_json({'a': 1}) == '{"a": 1}'
@@ -248,8 +248,8 @@ def test_searches_responses_streamed_response_to_json_string():
 
 
 def test_searches_responses_streamed_response_to_json_string_from_generator():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import StreamedResponse
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import StreamedResponse
     fr = FieldedResponse()
     sr = StreamedResponse(fr)
     g = (x for x in [{'a': 1}])
@@ -271,8 +271,8 @@ def test_searches_responses_streamed_response_to_json_string_from_generator():
 
 
 def test_searches_responses_streamed_response_iter():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import StreamedResponse
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import StreamedResponse
     fr = FieldedResponse()
     sr = StreamedResponse(fr)
     fr.response = {}
@@ -318,8 +318,8 @@ def test_searches_responses_streamed_response_iter():
 
 
 def test_searches_responses_streamed_response__iter__():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import StreamedResponse
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import StreamedResponse
     fr = FieldedResponse()
     sr = StreamedResponse(fr)
     fr.response = {}
@@ -365,8 +365,8 @@ def test_searches_responses_streamed_response__iter__():
 
 
 def test_searches_responses_streamed_response_make_streamed_response():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import StreamedResponse
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import StreamedResponse
     fr = FieldedResponse()
     sr = StreamedResponse(fr)
     fr.response = {'a': 1}
@@ -377,8 +377,8 @@ def test_searches_responses_streamed_response_make_streamed_response():
 
 
 def test_searches_responses_streamed_response_render():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import StreamedResponse
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import StreamedResponse
     fr = FieldedResponse()
     sr = StreamedResponse(fr)
     fr.response = {'a': 1}
@@ -389,16 +389,16 @@ def test_searches_responses_streamed_response_render():
 
 
 def test_searches_responses_in_memory_response_init():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import InMemoryResponse
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import InMemoryResponse
     fr = FieldedResponse()
     im = InMemoryResponse(fr)
     assert isinstance(im, InMemoryResponse)
 
 
 def test_searches_responses_in_memory_response_render():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import InMemoryResponse
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import InMemoryResponse
     fr = FieldedResponse()
     im = InMemoryResponse(fr)
     fr.response = {'a': 1}
@@ -411,9 +411,9 @@ def test_searches_responses_in_memory_response_render():
 
 
 def test_searches_responses_generator_memory_response_init():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import FieldedGeneratorResponse
-    from snovault.elasticsearch.searches.responses import GeneratorResponse
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import FieldedGeneratorResponse
+    from snosearch.responses import GeneratorResponse
     fr = FieldedResponse()
     gr = GeneratorResponse(fr)
     assert isinstance(gr, GeneratorResponse)
@@ -423,9 +423,9 @@ def test_searches_responses_generator_memory_response_init():
 
 
 def test_searches_responses_generator_response_render():
-    from snovault.elasticsearch.searches.responses import FieldedResponse
-    from snovault.elasticsearch.searches.responses import FieldedGeneratorResponse
-    from snovault.elasticsearch.searches.responses import GeneratorResponse
+    from snosearch.responses import FieldedResponse
+    from snosearch.responses import FieldedGeneratorResponse
+    from snosearch.responses import GeneratorResponse
     from types import GeneratorType
     fr = FieldedResponse()
     gr = GeneratorResponse(fr)
@@ -452,15 +452,15 @@ def test_searches_responses_generator_response_render():
 
 
 def test_searches_responses_fielded_generator_response_init():
-    from snovault.elasticsearch.searches.responses import FieldedGeneratorResponse
+    from snosearch.responses import FieldedGeneratorResponse
     fgr = FieldedGeneratorResponse()
     assert isinstance(fgr, FieldedGeneratorResponse)
 
 
 def test_searches_responses_fielded_generator_response_response_factory(dummy_request):
-    from snovault.elasticsearch.searches.responses import FieldedGeneratorResponse
-    from snovault.elasticsearch.searches.responses import GeneratorResponse
-    from snovault.elasticsearch.searches.parsers import ParamsParser
+    from snosearch.responses import FieldedGeneratorResponse
+    from snosearch.responses import GeneratorResponse
+    from snosearch.parsers import ParamsParser
     fgr = FieldedGeneratorResponse()
     fgr.response = {'a': 1}
     assert isinstance(fgr._response_factory(), GeneratorResponse)
@@ -484,9 +484,9 @@ def test_searches_responses_fielded_generator_response_response_factory(dummy_re
 
 
 def test_searches_responses_fielded_generator_response_render(dummy_request):
-    from snovault.elasticsearch.searches.responses import FieldedGeneratorResponse
-    from snovault.elasticsearch.searches.responses import GeneratorResponse
-    from snovault.elasticsearch.searches.parsers import ParamsParser
+    from snosearch.responses import FieldedGeneratorResponse
+    from snosearch.responses import GeneratorResponse
+    from snosearch.parsers import ParamsParser
     from types import GeneratorType
     from pyramid.response import Response
     fgr = FieldedGeneratorResponse()
@@ -514,15 +514,15 @@ def test_searches_responses_fielded_generator_response_render(dummy_request):
 
 
 def test_searches_responses_fielded_in_memory_response_init():
-    from snovault.elasticsearch.searches.responses import FieldedInMemoryResponse
+    from snosearch.responses import FieldedInMemoryResponse
     fimr = FieldedInMemoryResponse()
     assert isinstance(fimr, FieldedInMemoryResponse)
 
 
 def test_searches_responses_fielded_in_memory_response_response_factory(dummy_request):
-    from snovault.elasticsearch.searches.responses import FieldedInMemoryResponse
-    from snovault.elasticsearch.searches.responses import InMemoryResponse
-    from snovault.elasticsearch.searches.parsers import ParamsParser
+    from snosearch.responses import FieldedInMemoryResponse
+    from snosearch.responses import InMemoryResponse
+    from snosearch.parsers import ParamsParser
     fimr = FieldedInMemoryResponse()
     fimr.response = {'a': 1}
     assert isinstance(fimr._response_factory(), InMemoryResponse)
@@ -546,9 +546,9 @@ def test_searches_responses_fielded_in_memory_response_response_factory(dummy_re
 
 
 def test_searches_responses_fielded_in_memory_response_render(dummy_request):
-    from snovault.elasticsearch.searches.responses import FieldedInMemoryResponse
-    from snovault.elasticsearch.searches.responses import InMemoryResponse
-    from snovault.elasticsearch.searches.parsers import ParamsParser
+    from snosearch.responses import FieldedInMemoryResponse
+    from snosearch.responses import InMemoryResponse
+    from snosearch.parsers import ParamsParser
     from pyramid.response import Response
     fimr = FieldedInMemoryResponse()
     fimr.response = {'a': 1}

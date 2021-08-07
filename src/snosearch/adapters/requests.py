@@ -2,6 +2,8 @@ from pyramid.request import Request
 
 
 class DummyRequest(Request):
+
+        __parent__ = None
     
         @property
         def effective_principals(self):
