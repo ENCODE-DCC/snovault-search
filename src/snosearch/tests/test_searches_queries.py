@@ -174,11 +174,10 @@ def test_searches_queries_abstract_query_factory_get_principals(params_parser):
 
 
 def test_searches_queries_abstract_query_factory_get_registered_types(params_parser_snovault_types):
-    from snovault.typeinfo import TypesTool
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
     registered_types = aq._get_registered_types()
-    assert isinstance(registered_types, TypesTool)
+    assert isinstance(registered_types, dict)
 
 
 def test_searches_queries_abstract_query_factory_get_search_config_registry(params_parser_snovault_types):
