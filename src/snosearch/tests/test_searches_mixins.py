@@ -1289,7 +1289,7 @@ def raw_matrix_response():
 def parsed_params(dummy_request):
     from pyramid.testing import DummyResource
     from pyramid.security import Allow
-    from snovault.elasticsearch.searches.parsers import ParamsParser
+    from snosearch.parsers import ParamsParser
     dummy_request.environ['REMOTE_USER'] = 'TEST_SUBMITTER'
     dummy_request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&assay_title=Histone+ChIP-seq&award.project=Roadmap'
@@ -1309,7 +1309,7 @@ def parsed_params(dummy_request):
 
 @pytest.fixture
 def basic_search_query_factory_with_facets(raw_snowflakes_query, parsed_params):
-    from snovault.elasticsearch.searches.queries import BasicSearchQueryFactoryWithFacets
+    from snosearch.queries import BasicSearchQueryFactoryWithFacets
     from elasticsearch_dsl import Search
     bsq = BasicSearchQueryFactoryWithFacets(parsed_params)
     bsq.search = Search().from_dict(raw_snowflakes_query)
@@ -1318,7 +1318,7 @@ def basic_search_query_factory_with_facets(raw_snowflakes_query, parsed_params):
 
 @pytest.fixture
 def basic_matrix_query_factory_with_facets(raw_matrix_query, parsed_params):
-    from snovault.elasticsearch.searches.queries import BasicMatrixQueryFactoryWithFacets
+    from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     from elasticsearch_dsl import Search
     bmq = BasicMatrixQueryFactoryWithFacets(parsed_params)
     bmq.search = Search().from_dict(raw_matrix_query)
@@ -1327,7 +1327,7 @@ def basic_matrix_query_factory_with_facets(raw_matrix_query, parsed_params):
 
 @pytest.fixture
 def basic_query_response_with_facets(raw_response, basic_search_query_factory_with_facets):
-    from snovault.elasticsearch.searches.responses import BasicQueryResponseWithFacets
+    from snosearch.responses import BasicQueryResponseWithFacets
     from elasticsearch_dsl.response import Response, AggResponse
     basic_search_query_factory_with_facets.search._response = Response(
         basic_search_query_factory_with_facets.search,
@@ -1348,7 +1348,7 @@ def basic_query_response_with_facets(raw_response, basic_search_query_factory_wi
 
 @pytest.fixture
 def basic_matrix_response_with_facets(raw_matrix_response, basic_matrix_query_factory_with_facets):
-    from snovault.elasticsearch.searches.responses import BasicMatrixResponseWithFacets
+    from snosearch.responses import BasicMatrixResponseWithFacets
     from elasticsearch_dsl.response import Response, AggResponse
     basic_matrix_query_factory_with_facets.search._response = Response(
         basic_matrix_query_factory_with_facets.search,
@@ -1369,7 +1369,7 @@ def basic_matrix_response_with_facets(raw_matrix_response, basic_matrix_query_fa
 
 @pytest.fixture
 def raw_query_response_with_facets(raw_response, basic_search_query_factory_with_facets):
-    from snovault.elasticsearch.searches.responses import RawQueryResponseWithAggs
+    from snosearch.responses import RawQueryResponseWithAggs
     from elasticsearch_dsl.response import Response, AggResponse
     basic_search_query_factory_with_facets.search._response = Response(
         basic_search_query_factory_with_facets.search,
@@ -1438,8 +1438,8 @@ def test_searches_mixins_aggs_to_facets_mixin_get_facets(basic_query_response_wi
 
 
 def test_searches_mixins_aggs_to_facets_mixin_get_facets_called_once(mocker, parsed_params):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
-    from snovault.elasticsearch.searches.queries import BasicSearchQueryFactoryWithFacets
+    from snosearch.mixins import AggsToFacetsMixin
+    from snosearch.queries import BasicSearchQueryFactoryWithFacets
     afm = AggsToFacetsMixin()
     bsq = BasicSearchQueryFactoryWithFacets(parsed_params)
     afm.query_builder = bsq
@@ -1456,7 +1456,7 @@ def test_searches_mixins_aggs_to_facets_mixin_get_facets_called_once(mocker, par
 
 
 def test_searches_mixins_aggs_to_facets_mixin_get_facet_name():
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     afm = AggsToFacetsMixin()
     assert afm._get_facet_name('target') == 'target'
     assert afm._get_facet_name('experiment.library') == 'experiment-library'
@@ -1473,7 +1473,7 @@ def test_searches_mixins_aggs_to_facets_mixin_get_facet_title(basic_query_respon
 
 def test_searches_mixins_aggs_to_facets_mixin_get_facet_type(basic_query_response_with_facets, mocker):
     assert basic_query_response_with_facets._get_facet_type('status') == 'terms'
-    from snovault.elasticsearch.searches.responses import BasicQueryResponseWithFacets
+    from snosearch.responses import BasicQueryResponseWithFacets
     mocker.patch.object(BasicQueryResponseWithFacets, '_get_facets')
     BasicQueryResponseWithFacets._get_facets.return_value = {
         'status': {
@@ -1491,7 +1491,7 @@ def test_searches_mixins_aggs_to_facets_mixin_get_facet_open_on_load(basic_query
 
 
 def test_searches_mixins_aggs_to_facets_mixin_parse_aggregation_bucket_to_list(raw_response):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     afm = AggsToFacetsMixin()
     expected = [{'doc_count': 1053, 'key': 'yes'}, {'key': 'no', 'doc_count': 19908}]
     actual = afm._parse_aggregation_bucket_to_list(
@@ -1506,7 +1506,7 @@ def test_searches_mixins_aggs_to_facets_mixin_get_aggregation_result(
         mocker,
         snowflakes_facets
 ):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     mocker.patch.object(AggsToFacetsMixin, '_get_facets')
     AggsToFacetsMixin._get_facets.return_value = snowflakes_facets
     expected = {
@@ -1532,7 +1532,7 @@ def test_searches_mixins_aggs_to_facets_mixin_get_aggregation_details(
         mocker,
         snowflakes_facets
 ):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     mocker.patch.object(AggsToFacetsMixin, '_get_facets')
     AggsToFacetsMixin._get_facets.return_value = snowflakes_facets
     expected = {
@@ -1555,7 +1555,7 @@ def test_searches_mixins_aggs_to_facets_mixin_get_aggregation_bucket(
         mocker,
         snowflakes_facets
 ):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     mocker.patch.object(AggsToFacetsMixin, '_get_facets')
     AggsToFacetsMixin._get_facets.return_value = snowflakes_facets
     expected = [
@@ -1580,7 +1580,7 @@ def test_searches_mixins_aggs_to_facets_mixin_get_aggregation_metric(
         mocker,
         snowflakes_facets
 ):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     mocker.patch.object(AggsToFacetsMixin, '_get_facets')
     AggsToFacetsMixin._get_facets.return_value = snowflakes_facets
     expected = {
@@ -1599,7 +1599,7 @@ def test_searches_mixins_aggs_to_facets_mixin_aggregation_parser_factory(
         mocker,
         snowflakes_facets
 ):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     mocker.patch.object(AggsToFacetsMixin, '_get_facets')
     AggsToFacetsMixin._get_facets.return_value = snowflakes_facets
     actual = basic_query_response_with_facets._aggregation_parser_factory('file_size')
@@ -1613,7 +1613,7 @@ def test_searches_mixins_aggs_to_facets_mixin_get_aggregation_total(
         mocker,
         snowflakes_facets
 ):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     mocker.patch.object(AggsToFacetsMixin, '_get_facets')
     AggsToFacetsMixin._get_facets.return_value = snowflakes_facets
     assert basic_query_response_with_facets._get_aggregation_total('status') == 35
@@ -1626,7 +1626,7 @@ def test_searches_mixins_aggs_to_facets_mixin_aggregation_is_appended(
         mocker,
         snowflakes_facets
 ):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     mocker.patch.object(AggsToFacetsMixin, '_get_facets')
     AggsToFacetsMixin._get_facets.return_value = snowflakes_facets
     assert not basic_query_response_with_facets._aggregation_is_appended('status')
@@ -1639,7 +1639,7 @@ def test_searches_mixins_aggs_to_facets_mixin_format_aggregation(
         mocker,
         snowflakes_facets
 ):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     mocker.patch.object(AggsToFacetsMixin, '_get_facets')
     AggsToFacetsMixin._get_facets.return_value = snowflakes_facets
     basic_query_response_with_facets._format_aggregation('status')
@@ -1674,7 +1674,7 @@ def test_searches_mixins_aggs_to_facets_mixin_format_aggregations(
     mocker,
     snowflakes_facets
 ):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     mocker.patch.object(AggsToFacetsMixin, '_get_facets')
     AggsToFacetsMixin._get_facets.return_value = snowflakes_facets
     basic_query_response_with_facets._format_aggregations()
@@ -1762,7 +1762,7 @@ def test_searches_mixins_aggs_to_facets_mixin_get_fake_facets(
     mocker,
     snowflakes_facets
 ):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     mocker.patch.object(AggsToFacetsMixin, '_get_facets')
     AggsToFacetsMixin._get_facets.return_value = snowflakes_facets
     expected = [
@@ -1786,14 +1786,14 @@ def test_searches_mixins_aggs_to_facets_mixin_get_fake_facets(
 
 
 def test_searches_mixins_aggs_to_facets_mixin_make_fake_bucket():
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     am = AggsToFacetsMixin()
     am._make_fake_bucket('target.name', 'ctcf', False)
     assert am.fake_buckets['target.name'][0] == {'key': 'ctcf', 'isEqual': False}
 
 
 def test_searches_mixins_aggs_to_facets_mixin_make_fake_buckets():
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     am = AggsToFacetsMixin()
     am._make_fake_buckets(
         params=[('status', 'released'), ('treated', '*'), ('biosample.organism', 'human')],
@@ -1863,7 +1863,7 @@ def test_searches_mixins_aggs_to_facets_mixin_make_fake_facets(
     mocker,
     snowflakes_facets
 ):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     mocker.patch.object(AggsToFacetsMixin, '_get_facets')
     AggsToFacetsMixin._get_facets.return_value = snowflakes_facets
     basic_query_response_with_facets._make_fake_facets()
@@ -1875,7 +1875,7 @@ def test_searches_mixins_aggs_to_facets_mixin_to_facets(
     mocker,
     snowflakes_facets
 ):
-    from snovault.elasticsearch.searches.mixins import AggsToFacetsMixin
+    from snosearch.mixins import AggsToFacetsMixin
     mocker.patch.object(AggsToFacetsMixin, '_get_facets')
     AggsToFacetsMixin._get_facets.return_value = snowflakes_facets
     actual = basic_query_response_with_facets.to_facets()
@@ -1883,13 +1883,13 @@ def test_searches_mixins_aggs_to_facets_mixin_to_facets(
 
 
 def test_searches_mixins_hits_to_graph_mixin_init():
-    from snovault.elasticsearch.searches.mixins import HitsToGraphMixin
+    from snosearch.mixins import HitsToGraphMixin
     hg = HitsToGraphMixin()
     assert isinstance(hg, HitsToGraphMixin)
 
 
 def test_searches_mixins_hits_to_graph_mixin_limit_generator():
-    from snovault.elasticsearch.searches.mixins import HitsToGraphMixin
+    from snosearch.mixins import HitsToGraphMixin
     hg = HitsToGraphMixin()
     g = (x for x in range(100))
     assert len(list(g)) == 100
@@ -1917,7 +1917,7 @@ def test_searches_mixins_hits_to_graph_mixin_scan(
 ):
     from elasticsearch_dsl.response import Response
     from types import GeneratorType
-    from snovault.elasticsearch.searches.queries import BasicSearchQueryFactoryWithFacets
+    from snosearch.queries import BasicSearchQueryFactoryWithFacets
     mocker.patch.object(BasicSearchQueryFactoryWithFacets, '_limit_is_all')
     BasicSearchQueryFactoryWithFacets._limit_is_all.return_value = False
     scan = basic_query_response_with_facets._scan()
@@ -1935,7 +1935,7 @@ def test_searches_mixins_hits_to_graph_mixin_get_results(
         mocker
 ):
     from elasticsearch_dsl.response import Response
-    from snovault.elasticsearch.searches.queries import BasicSearchQueryFactoryWithFacets
+    from snosearch.queries import BasicSearchQueryFactoryWithFacets
     mocker.patch.object(BasicSearchQueryFactoryWithFacets, '_should_scan_over_results')
     mocker.patch.object(BasicSearchQueryFactoryWithFacets, '_limit_is_all')
     BasicSearchQueryFactoryWithFacets._should_scan_over_results.return_value = False
@@ -1989,7 +1989,7 @@ def test_searches_mixins_hits_to_graph_mixin_to_graph_scan_with_limit(
         raw_response,
         mocker
 ):
-    from snovault.elasticsearch.searches.queries import BasicSearchQueryFactoryWithFacets
+    from snosearch.queries import BasicSearchQueryFactoryWithFacets
     from elasticsearch_dsl.search import Search
     mocker.patch.object(BasicSearchQueryFactoryWithFacets, '_should_scan_over_results')
     mocker.patch.object(BasicSearchQueryFactoryWithFacets, '_limit_is_all')
@@ -2014,7 +2014,7 @@ def test_searches_mixins_hits_to_graph_mixin_to_graph_scan_with_limit(
 
 
 def test_searches_mixins_raw_hits_to_graph_mixin_init():
-    from snovault.elasticsearch.searches.mixins import RawHitsToGraphMixin
+    from snosearch.mixins import RawHitsToGraphMixin
     rm = RawHitsToGraphMixin()
     assert isinstance(rm, RawHitsToGraphMixin)
 
@@ -2026,7 +2026,7 @@ def test_searches_mixins_raw_hits_to_graph_mixin_to_graph(raw_query_response_wit
 
 
 def test_searches_mixins_aggs_to_matrix_mixin_init():
-    from snovault.elasticsearch.searches.mixins import AggsToMatrixMixin
+    from snosearch.mixins import AggsToMatrixMixin
     am = AggsToMatrixMixin()
     assert isinstance(am, AggsToMatrixMixin)
 
@@ -2085,6 +2085,6 @@ def test_searches_mixins_aggs_to_matrix_mixin_to_matrix(basic_matrix_response_wi
 
 
 def test_searches_mixins_audit_aggs_to_matrix_mixin_init():
-    from snovault.elasticsearch.searches.mixins import AuditAggsToMatrixMixin
+    from snosearch.mixins import AuditAggsToMatrixMixin
     am = AuditAggsToMatrixMixin()
     assert isinstance(am, AuditAggsToMatrixMixin)
