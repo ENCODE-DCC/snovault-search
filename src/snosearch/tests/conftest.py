@@ -26,7 +26,7 @@ def dummy_registry(testing_types, testing_configs):
 @pytest.fixture
 def dummy_request(dummy_registry):
     from snosearch.adapters.requests import DummyRequest
-    dummy_request = DummyRequest({})
+    dummy_request = DummyRequest({}).blank('/dummy')
     dummy_request.registry = dummy_registry
     return dummy_request
 

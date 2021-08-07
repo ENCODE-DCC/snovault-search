@@ -1,4 +1,5 @@
 from pyramid.request import Request
+from snosearch.interfaces import JSONLD_CONTEXT
 
 
 class DummyRequest(Request):
@@ -23,3 +24,8 @@ class DummyRequest(Request):
                     if acl[1] == principal and acl[2] == action:
                         return acl[0]
             return False
+
+        def route_path(self, context):
+            if context == JSONLD_CONTEXT:
+                    return '/terms/'
+            return super().route_path(context)

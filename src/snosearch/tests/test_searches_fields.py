@@ -5,9 +5,9 @@ import pytest
 def dummy_parent(dummy_request):
     from pyramid.testing import DummyResource
     from pyramid.security import Allow
-    from snovault.elasticsearch.searches.parsers import ParamsParser
-    from snovault.elasticsearch.searches.queries import AbstractQueryFactory
-    from snovault.elasticsearch.interfaces import ELASTIC_SEARCH
+    from snosearch.parsers import ParamsParser
+    from snosearch.queries import AbstractQueryFactory
+    from snosearch.interfaces import ELASTIC_SEARCH
     from elasticsearch import Elasticsearch
     dummy_request.registry[ELASTIC_SEARCH] = Elasticsearch()
     dummy_request.context = DummyResource()
@@ -26,21 +26,21 @@ def dummy_parent(dummy_request):
 
 
 def test_searches_fields_response_field_init():
-    from snovault.elasticsearch.searches.fields import ResponseField
+    from snosearch.fields import ResponseField
     rf = ResponseField()
     assert isinstance(rf, ResponseField)
 
 
 def test_searches_fields_response_field_get_params_parser(dummy_parent):
-    from snovault.elasticsearch.searches.fields import ResponseField
-    from snovault.elasticsearch.searches.parsers import ParamsParser
+    from snosearch.fields import ResponseField
+    from snosearch.parsers import ParamsParser
     rf = ResponseField()
     rf.parent = dummy_parent
     assert isinstance(rf.get_params_parser(), ParamsParser)
 
 
 def test_searches_fields_response_field_get_request(dummy_parent):
-    from snovault.elasticsearch.searches.fields import ResponseField
+    from snosearch.fields import ResponseField
     from pyramid.request import Request
     rf = ResponseField()
     rf.parent = dummy_parent
@@ -48,13 +48,13 @@ def test_searches_fields_response_field_get_request(dummy_parent):
 
 
 def test_searches_fields_basic_search_response_field_init():
-    from snovault.elasticsearch.searches.fields import BasicSearchResponseField
+    from snosearch.fields import BasicSearchResponseField
     brf = BasicSearchResponseField()
     assert isinstance(brf, BasicSearchResponseField)
 
 
 def test_searches_fields_basic_search_response_build_query(dummy_parent):
-    from snovault.elasticsearch.searches.fields import BasicSearchResponseField
+    from snosearch.fields import BasicSearchResponseField
     from elasticsearch_dsl import Search
     brf = BasicSearchResponseField()
     brf.parent = dummy_parent
@@ -63,8 +63,8 @@ def test_searches_fields_basic_search_response_build_query(dummy_parent):
 
 
 def test_searches_fields_basic_search_response_register_query(dummy_parent):
-    from snovault.elasticsearch.searches.fields import BasicSearchResponseField
-    from snovault.elasticsearch.searches.queries import BasicSearchQueryFactory
+    from snosearch.fields import BasicSearchResponseField
+    from snosearch.queries import BasicSearchQueryFactory
     brf = BasicSearchResponseField()
     brf.parent = dummy_parent
     brf._build_query()
@@ -77,7 +77,7 @@ def test_searches_fields_basic_search_response_execute_query(dummy_parent, mocke
     from elasticsearch_dsl import Search
     mocker.patch.object(Search, 'execute')
     Search.execute.return_value = []
-    from snovault.elasticsearch.searches.fields import BasicSearchResponseField
+    from snosearch.fields import BasicSearchResponseField
     brf = BasicSearchResponseField()
     brf.parent = dummy_parent
     brf._build_query()
@@ -86,13 +86,13 @@ def test_searches_fields_basic_search_response_execute_query(dummy_parent, mocke
 
 
 def test_searches_fields_basic_search_with_facets_response_field_init():
-    from snovault.elasticsearch.searches.fields import BasicSearchWithFacetsResponseField
+    from snosearch.fields import BasicSearchWithFacetsResponseField
     brf = BasicSearchWithFacetsResponseField()
     assert isinstance(brf, BasicSearchWithFacetsResponseField)
 
 
 def test_searches_fields_basic_search_with_facets_response_build_query(dummy_parent):
-    from snovault.elasticsearch.searches.fields import BasicSearchWithFacetsResponseField
+    from snosearch.fields import BasicSearchWithFacetsResponseField
     from elasticsearch_dsl import Search
     brf = BasicSearchWithFacetsResponseField()
     brf.parent = dummy_parent
@@ -101,8 +101,8 @@ def test_searches_fields_basic_search_with_facets_response_build_query(dummy_par
 
 
 def test_searches_fields_basic_search_with_facets_response_register_query(dummy_parent):
-    from snovault.elasticsearch.searches.fields import BasicSearchWithFacetsResponseField
-    from snovault.elasticsearch.searches.queries import BasicSearchQueryFactoryWithFacets
+    from snosearch.fields import BasicSearchWithFacetsResponseField
+    from snosearch.queries import BasicSearchQueryFactoryWithFacets
     brf = BasicSearchWithFacetsResponseField()
     brf.parent = dummy_parent
     brf._build_query()
@@ -115,7 +115,7 @@ def test_searches_fields_basic_search_with_facets_response_execute_query(dummy_p
     from elasticsearch_dsl import Search
     mocker.patch.object(Search, 'execute')
     Search.execute.return_value = []
-    from snovault.elasticsearch.searches.fields import BasicSearchWithFacetsResponseField
+    from snosearch.fields import BasicSearchWithFacetsResponseField
     brf = BasicSearchWithFacetsResponseField()
     brf.parent = dummy_parent
     brf._build_query()
@@ -124,13 +124,13 @@ def test_searches_fields_basic_search_with_facets_response_execute_query(dummy_p
 
 
 def test_searches_fields_basic_search_without_facets_response_field_init():
-    from snovault.elasticsearch.searches.fields import BasicSearchWithoutFacetsResponseField
+    from snosearch.fields import BasicSearchWithoutFacetsResponseField
     brf = BasicSearchWithoutFacetsResponseField()
     assert isinstance(brf, BasicSearchWithoutFacetsResponseField)
 
 
 def test_searches_fields_basic_search_without_facets_response_build_query(dummy_parent):
-    from snovault.elasticsearch.searches.fields import BasicSearchWithoutFacetsResponseField
+    from snosearch.fields import BasicSearchWithoutFacetsResponseField
     from elasticsearch_dsl import Search
     brf = BasicSearchWithoutFacetsResponseField()
     brf.parent = dummy_parent
@@ -139,21 +139,21 @@ def test_searches_fields_basic_search_without_facets_response_build_query(dummy_
 
 
 def test_searches_fields_cached_facets_response_field_init():
-    from snovault.elasticsearch.searches.fields import CachedFacetsResponseField
+    from snosearch.fields import CachedFacetsResponseField
     cfrf = CachedFacetsResponseField()
     assert isinstance(cfrf, CachedFacetsResponseField)
 
 
 def test_searches_fields_collection_search_with_facets_response_field_init():
-    from snovault.elasticsearch.searches.fields import CollectionSearchWithFacetsResponseField
+    from snosearch.fields import CollectionSearchWithFacetsResponseField
     crf = CollectionSearchWithFacetsResponseField()
     assert isinstance(crf, CollectionSearchWithFacetsResponseField)
 
 
 def test_searches_fields_collection_search_with_facets_response_build_query(dummy_parent):
-    from snovault.elasticsearch.searches.fields import CollectionSearchWithFacetsResponseField
-    from snovault.elasticsearch.searches.fields import CollectionSearchQueryFactoryWithFacets
-    context = dummy_parent._meta['params_parser']._request.registry['collections']['TestingSearchSchema']
+    from snosearch.fields import CollectionSearchWithFacetsResponseField
+    from snosearch.fields import CollectionSearchQueryFactoryWithFacets
+    context = dummy_parent._meta['params_parser']._request.registry['types']['TestingSearchSchema']
     dummy_parent._meta['params_parser']._request.context = context
     from elasticsearch_dsl import Search
     crf = CollectionSearchWithFacetsResponseField()
@@ -164,8 +164,8 @@ def test_searches_fields_collection_search_with_facets_response_build_query(dumm
 
 
 def test_searches_fields_basic_report_with_facets_response_build_query(dummy_parent):
-    from snovault.elasticsearch.searches.fields import BasicReportWithFacetsResponseField
-    from snovault.elasticsearch.searches.queries import BasicReportQueryFactoryWithFacets
+    from snosearch.fields import BasicReportWithFacetsResponseField
+    from snosearch.queries import BasicReportQueryFactoryWithFacets
     from elasticsearch_dsl import Search
     brf = BasicReportWithFacetsResponseField()
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
@@ -179,8 +179,8 @@ def test_searches_fields_basic_report_with_facets_response_build_query(dummy_par
 
 
 def test_searches_fields_basic_report_without_facets_response_build_query(dummy_parent):
-    from snovault.elasticsearch.searches.fields import BasicReportWithoutFacetsResponseField
-    from snovault.elasticsearch.searches.queries import BasicReportQueryFactoryWithoutFacets
+    from snosearch.fields import BasicReportWithoutFacetsResponseField
+    from snosearch.queries import BasicReportQueryFactoryWithoutFacets
     from elasticsearch_dsl import Search
     brf = BasicReportWithoutFacetsResponseField()
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
@@ -194,16 +194,16 @@ def test_searches_fields_basic_report_without_facets_response_build_query(dummy_
 
 
 def test_searches_fields_raw_search_with_aggs_response_field_init():
-    from snovault.elasticsearch.searches.fields import RawSearchWithAggsResponseField
+    from snosearch.fields import RawSearchWithAggsResponseField
     rs = RawSearchWithAggsResponseField()
     assert isinstance(rs, RawSearchWithAggsResponseField)
 
 
 def test_searches_fields_raw_search_with_aggs_response_field_maybe_scan_over_results(dummy_parent, mocker):
-    from snovault.elasticsearch.searches.fields import BasicSearchQueryFactoryWithFacets
-    from snovault.elasticsearch.searches.fields import RawSearchWithAggsResponseField
-    from snovault.elasticsearch.searches.mixins import RawHitsToGraphMixin
-    from snovault.elasticsearch.searches.responses import RawQueryResponseWithAggs
+    from snosearch.fields import BasicSearchQueryFactoryWithFacets
+    from snosearch.fields import RawSearchWithAggsResponseField
+    from snosearch.mixins import RawHitsToGraphMixin
+    from snosearch.responses import RawQueryResponseWithAggs
     rs = RawSearchWithAggsResponseField()
     rs.parent = dummy_parent
     rs._build_query()
@@ -223,34 +223,34 @@ def test_searches_fields_raw_search_with_aggs_response_field_maybe_scan_over_res
 
 
 def test_searches_fields_title_response_field_init():
-    from snovault.elasticsearch.searches.fields import TitleResponseField
+    from snosearch.fields import TitleResponseField
     tf = TitleResponseField()
     assert isinstance(tf, TitleResponseField)
 
 
 def test_searches_fields_title_field_title_value():
-    from snovault.elasticsearch.searches.fields import TitleResponseField
+    from snosearch.fields import TitleResponseField
     tf = TitleResponseField(title='Search')
     rtf = tf.render()
     assert rtf == {'title': 'Search'}
 
 
 def test_searches_fields_type_response_field():
-    from snovault.elasticsearch.searches.fields import TypeResponseField
+    from snosearch.fields import TypeResponseField
     tr = TypeResponseField(at_type=['Snowflake'])
     assert isinstance(tr, TypeResponseField)
     assert tr.render() == {'@type': ['Snowflake']}
 
 
 def test_searches_fields_context_response_field(dummy_parent):
-    from snovault.elasticsearch.searches.fields import ContextResponseField
+    from snosearch.fields import ContextResponseField
     cr = ContextResponseField()
     assert isinstance(cr, ContextResponseField)
     assert cr.render(parent=dummy_parent) == {'@context': '/terms/'}
 
 
 def test_searches_fields_id_response_field(dummy_parent):
-    from snovault.elasticsearch.searches.fields import IDResponseField
+    from snosearch.fields import IDResponseField
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
     )
@@ -262,13 +262,13 @@ def test_searches_fields_id_response_field(dummy_parent):
 
 
 def test_searches_fields_all_response_field_init(dummy_parent):
-    from snovault.elasticsearch.searches.fields import AllResponseField
+    from snosearch.fields import AllResponseField
     ar = AllResponseField()
     assert isinstance(ar, AllResponseField)
 
 
 def test_searches_fields_all_response_field_get_limit(dummy_parent):
-    from snovault.elasticsearch.searches.fields import AllResponseField
+    from snosearch.fields import AllResponseField
     ar = AllResponseField()
     ar.parent = dummy_parent
     assert ar._get_limit() == [('limit', 25)]
@@ -279,7 +279,7 @@ def test_searches_fields_all_response_field_get_limit(dummy_parent):
 
 
 def test_searches_fields_all_response_field_get_qs_with_limit_all(dummy_parent):
-    from snovault.elasticsearch.searches.fields import AllResponseField
+    from snosearch.fields import AllResponseField
     ar = AllResponseField()
     ar.parent = dummy_parent
     ar.parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
@@ -292,7 +292,7 @@ def test_searches_fields_all_response_field_get_qs_with_limit_all(dummy_parent):
 
 
 def test_searches_fields_all_response_field_maybe_add_all(dummy_parent):
-    from snovault.elasticsearch.searches.fields import AllResponseField
+    from snosearch.fields import AllResponseField
     ar = AllResponseField()
     ar.parent = dummy_parent
     ar._maybe_add_all()
@@ -333,13 +333,13 @@ def test_searches_fields_all_response_field_maybe_add_all(dummy_parent):
 
 
 def test_searches_fields_notification_response_field_init(dummy_parent):
-    from snovault.elasticsearch.searches.fields import NotificationResponseField
+    from snosearch.fields import NotificationResponseField
     nr = NotificationResponseField()
     assert isinstance(nr, NotificationResponseField)
 
 
 def test_searches_fields_notification_response_field_results_found(dummy_parent):
-    from snovault.elasticsearch.searches.fields import NotificationResponseField
+    from snosearch.fields import NotificationResponseField
     nr = NotificationResponseField()
     nr.parent = dummy_parent
     assert not nr._results_found()
@@ -350,7 +350,7 @@ def test_searches_fields_notification_response_field_results_found(dummy_parent)
 
 
 def test_searches_fields_notification_response_field_set_notification(dummy_parent):
-    from snovault.elasticsearch.searches.fields import NotificationResponseField
+    from snosearch.fields import NotificationResponseField
     nr = NotificationResponseField()
     nr.parent = dummy_parent
     assert 'notification' not in nr.response
@@ -359,7 +359,7 @@ def test_searches_fields_notification_response_field_set_notification(dummy_pare
 
 
 def test_searches_fields_notification_response_field_set_status_code(dummy_parent):
-    from snovault.elasticsearch.searches.fields import NotificationResponseField
+    from snosearch.fields import NotificationResponseField
     nr = NotificationResponseField()
     nr.parent = dummy_parent
     assert nr.parent._meta['params_parser']._request.response.status_code == 200
@@ -368,7 +368,7 @@ def test_searches_fields_notification_response_field_set_status_code(dummy_paren
 
 
 def test_searches_fields_filters_response_field_init(dummy_parent):
-    from snovault.elasticsearch.searches.fields import FiltersResponseField
+    from snosearch.fields import FiltersResponseField
     frf = FiltersResponseField()
     assert isinstance(frf, FiltersResponseField)
 
@@ -378,7 +378,7 @@ def test_searches_fields_filters_response_field_get_filters_and_search_terms_fro
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
         '&limit=all&frame=embedded&restricted!=*&searchTerm=ctcf'
     )
-    from snovault.elasticsearch.searches.fields import FiltersResponseField
+    from snosearch.fields import FiltersResponseField
     frf = FiltersResponseField()
     frf.parent = dummy_parent
     expected = [
@@ -398,7 +398,7 @@ def test_searches_fields_filters_response_field_get_path_qs_without_filter(dummy
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
         '&limit=all&frame=embedded&restricted!=*&searchTerm=ctcf'
     )
-    from snovault.elasticsearch.searches.fields import FiltersResponseField
+    from snosearch.fields import FiltersResponseField
     frf = FiltersResponseField()
     frf.parent = dummy_parent
     assert frf._get_path_qs_without_filter('type', 'Experiment') == (
@@ -424,7 +424,7 @@ def test_searches_fields_filters_response_field_get_path_qs_without_filter_malfo
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
         '&limit=all&frame=embedded&restricted!=*&searchTerm=ctcf'
     )
-    from snovault.elasticsearch.searches.fields import FiltersResponseField
+    from snosearch.fields import FiltersResponseField
     frf = FiltersResponseField()
     frf.parent = dummy_parent
     assert frf._get_path_qs_without_filter('files.file_type', '') == (
@@ -446,7 +446,7 @@ def test_searches_fields_filters_response_field_make_filter(dummy_parent):
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
         '&limit=all&frame=embedded&restricted!=*&searchTerm=ctcf'
     )
-    from snovault.elasticsearch.searches.fields import FiltersResponseField
+    from snosearch.fields import FiltersResponseField
     frf = FiltersResponseField()
     frf.parent = dummy_parent
     frf._make_filter('type', 'Experiment')
@@ -462,7 +462,7 @@ def test_searches_fields_filters_response_field_make_filters(dummy_parent):
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
         '&limit=all&frame=embedded&restricted!=*&searchTerm=ctcf'
     )
-    from snovault.elasticsearch.searches.fields import FiltersResponseField
+    from snosearch.fields import FiltersResponseField
     frf = FiltersResponseField()
     frf.parent = dummy_parent
     frf._make_filters()
@@ -503,7 +503,7 @@ def test_searches_fields_clear_filter_response_field_get_search_term_or_types_fr
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
         '&limit=all&frame=embedded&restricted!=*&searchTerm=ctcf'
     )
-    from snovault.elasticsearch.searches.fields import ClearFiltersResponseField
+    from snosearch.fields import ClearFiltersResponseField
     cfr = ClearFiltersResponseField()
     cfr.parent = dummy_parent
     search_term_or_types = cfr._get_search_term_or_types_from_query_string()
@@ -521,7 +521,7 @@ def test_searches_fields_type_only_clear_filter_response_field_get_search_term_o
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
         '&limit=all&frame=embedded&restricted!=*&searchTerm=ctcf'
     )
-    from snovault.elasticsearch.searches.fields import TypeOnlyClearFiltersResponseField
+    from snosearch.fields import TypeOnlyClearFiltersResponseField
     tcfr = TypeOnlyClearFiltersResponseField()
     tcfr.parent = dummy_parent
     search_term_or_types = tcfr._get_search_term_or_types_from_query_string()
@@ -540,7 +540,7 @@ def test_searches_fields_clear_filter_response_field_get_path_qs_with_no_filters
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
         '&limit=all&frame=embedded&restricted!=*&searchTerm=ctcf'
     )
-    from snovault.elasticsearch.searches.fields import ClearFiltersResponseField
+    from snosearch.fields import ClearFiltersResponseField
     cfr = ClearFiltersResponseField()
     cfr.parent = dummy_parent
     path = cfr._get_path_qs_with_no_filters()
@@ -552,7 +552,7 @@ def test_searches_fields_clear_filter_response_field_add_clear_filters(dummy_par
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
         '&limit=all&frame=embedded&restricted!=*'
     )
-    from snovault.elasticsearch.searches.fields import ClearFiltersResponseField
+    from snosearch.fields import ClearFiltersResponseField
     cfr = ClearFiltersResponseField()
     cfr.parent = dummy_parent
     cfr._add_clear_filters()
@@ -560,9 +560,9 @@ def test_searches_fields_clear_filter_response_field_add_clear_filters(dummy_par
 
 
 def test_searches_fields_collection_clear_filter_response_field_get_search_term_or_types_from_query_string(dummy_parent):
-    from snovault.elasticsearch.searches.queries import CollectionSearchQueryFactoryWithFacets
-    from snovault.elasticsearch.searches.fields import CollectionClearFiltersResponseField
-    context = dummy_parent._meta['params_parser']._request.registry['collections']['TestingSearchSchema']
+    from snosearch.queries import CollectionSearchQueryFactoryWithFacets
+    from snosearch.fields import CollectionClearFiltersResponseField
+    context = dummy_parent._meta['params_parser']._request.registry['types']['TestingSearchSchema']
     dummy_parent._meta['params_parser']._request.context = context
     dummy_parent._meta['query_builder'] = CollectionSearchQueryFactoryWithFacets(dummy_parent._meta['params_parser'])
     ccfr = CollectionClearFiltersResponseField()
@@ -573,9 +573,9 @@ def test_searches_fields_collection_clear_filter_response_field_get_search_term_
 
 
 def test_searches_fields_collection_clear_filter_response_field_get_path_qs_with_no_filters(dummy_parent):
-    from snovault.elasticsearch.searches.queries import CollectionSearchQueryFactoryWithFacets
-    from snovault.elasticsearch.searches.fields import CollectionClearFiltersResponseField
-    context = dummy_parent._meta['params_parser']._request.registry['collections']['TestingSearchSchema']
+    from snosearch.queries import CollectionSearchQueryFactoryWithFacets
+    from snosearch.fields import CollectionClearFiltersResponseField
+    context = dummy_parent._meta['params_parser']._request.registry['types']['TestingSearchSchema']
     dummy_parent._meta['params_parser']._request.context = context
     dummy_parent._meta['query_builder'] = CollectionSearchQueryFactoryWithFacets(dummy_parent._meta['params_parser'])
     ccfr = CollectionClearFiltersResponseField()
@@ -584,7 +584,7 @@ def test_searches_fields_collection_clear_filter_response_field_get_path_qs_with
 
 
 def test_searches_fields_debug_query_response_field(dummy_parent, mocker):
-    from snovault.elasticsearch.searches.queries import AbstractQueryFactory
+    from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
     AbstractQueryFactory._get_index.return_value = 'snovault-resources'
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
@@ -592,7 +592,7 @@ def test_searches_fields_debug_query_response_field(dummy_parent, mocker):
         '&limit=all&frame=embedded&restricted!=*&debug=true'
     )
     dummy_parent._meta['query_builder'].add_post_filters()
-    from snovault.elasticsearch.searches.fields import DebugQueryResponseField
+    from snosearch.fields import DebugQueryResponseField
     dbr = DebugQueryResponseField()
     r = dbr.render(parent=dummy_parent)
     assert 'query' in r['debug']['raw_query']
@@ -603,7 +603,7 @@ def test_searches_fields_column_response_field(dummy_parent):
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema'
     )
-    from snovault.elasticsearch.searches.fields import ColumnsResponseField
+    from snosearch.fields import ColumnsResponseField
     crf = ColumnsResponseField()
     r = crf.render(parent=dummy_parent)
     assert r['columns'] == {
@@ -613,25 +613,15 @@ def test_searches_fields_column_response_field(dummy_parent):
     }
 
 
-def test_searches_fields_non_sortable_response_field(dummy_parent):
-    dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
-        'type=TestingSearchSchema'
-    )
-    from snovault.elasticsearch.searches.fields import NonSortableResponseField
-    nrf = NonSortableResponseField()
-    r = nrf.render(parent=dummy_parent)
-    assert r['non_sortable'] == ['pipeline_error_detail', 'description', 'notes']
-
-
 def test_searches_fields_sort_response_field_remove_prefix(dummy_parent):
-    from snovault.elasticsearch.searches.fields import SortResponseField
+    from snosearch.fields import SortResponseField
     srf = SortResponseField()
     rp = srf._remove_prefix([{'embedded.x': {'order': 'desc'}}, {'embedded.y': {'order': 'asc'}}])
     assert rp == {'x': {'order': 'desc'}, 'y': {'order': 'asc'}}
 
 
 def test_searches_fields_sort_response_field_maybe_add_sort(dummy_parent):
-    from snovault.elasticsearch.searches.fields import SortResponseField
+    from snosearch.fields import SortResponseField
     from elasticsearch_dsl import Search
     s = Search().from_dict(
         {'query': {'match_all': {}}, 'sort': [{'embedded.y': {'order': 'desc'}}]}
@@ -644,14 +634,14 @@ def test_searches_fields_sort_response_field_maybe_add_sort(dummy_parent):
 
 
 def test_searches_fields_raw_matrix_with_aggs_response_field_init():
-    from snovault.elasticsearch.searches.fields import RawMatrixWithAggsResponseField
+    from snosearch.fields import RawMatrixWithAggsResponseField
     rm = RawMatrixWithAggsResponseField()
     assert isinstance(rm, RawMatrixWithAggsResponseField)
 
 
 def test_searches_fields_raw_matrix_with_aggs_response_field_build_query(dummy_parent):
-    from snovault.elasticsearch.searches.fields import RawMatrixWithAggsResponseField
-    from snovault.elasticsearch.searches.queries import BasicMatrixQueryFactoryWithFacets
+    from snosearch.fields import RawMatrixWithAggsResponseField
+    from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     from elasticsearch_dsl import Search
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
@@ -664,14 +654,14 @@ def test_searches_fields_raw_matrix_with_aggs_response_field_build_query(dummy_p
 
 
 def test_searches_fields_raw_top_hits_response_field_init():
-    from snovault.elasticsearch.searches.fields import RawTopHitsResponseField
+    from snosearch.fields import RawTopHitsResponseField
     rth = RawTopHitsResponseField()
     assert isinstance(rth, RawTopHitsResponseField)
 
 
 def test_searches_fields_raw_top_hits_response_field_build_query(dummy_parent):
-    from snovault.elasticsearch.searches.fields import RawTopHitsResponseField
-    from snovault.elasticsearch.searches.queries import TopHitsQueryFactory
+    from snosearch.fields import RawTopHitsResponseField
+    from snosearch.queries import TopHitsQueryFactory
     from elasticsearch_dsl import Search
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
@@ -684,14 +674,14 @@ def test_searches_fields_raw_top_hits_response_field_build_query(dummy_parent):
 
 
 def test_searches_fields_basic_matrix_with_facets_response_field_init():
-    from snovault.elasticsearch.searches.fields import BasicMatrixWithFacetsResponseField
+    from snosearch.fields import BasicMatrixWithFacetsResponseField
     bmwf = BasicMatrixWithFacetsResponseField()
     assert isinstance(bmwf, BasicMatrixWithFacetsResponseField)
 
 
 def test_searches_fields_basic_matrix_with_facets_response_field_build_query(dummy_parent):
-    from snovault.elasticsearch.searches.fields import BasicMatrixWithFacetsResponseField
-    from snovault.elasticsearch.searches.queries import BasicMatrixQueryFactoryWithFacets
+    from snosearch.fields import BasicMatrixWithFacetsResponseField
+    from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     from elasticsearch_dsl import Search
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
@@ -704,7 +694,7 @@ def test_searches_fields_basic_matrix_with_facets_response_field_build_query(dum
 
 
 def test_searches_fields_basic_matrix_with_facets_response_field_execute_query(dummy_parent, mocker):
-    from snovault.elasticsearch.searches.fields import BasicMatrixWithFacetsResponseField
+    from snosearch.fields import BasicMatrixWithFacetsResponseField
     from elasticsearch_dsl import Search
     mocker.patch.object(Search, 'execute')
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
@@ -718,14 +708,14 @@ def test_searches_fields_basic_matrix_with_facets_response_field_execute_query(d
 
 
 def test_searches_fields_missing_matrix_with_facets_response_field_init():
-    from snovault.elasticsearch.searches.fields import MissingMatrixWithFacetsResponseField
+    from snosearch.fields import MissingMatrixWithFacetsResponseField
     mmwf = MissingMatrixWithFacetsResponseField()
     assert isinstance(mmwf, MissingMatrixWithFacetsResponseField)
 
 
 def test_searches_fields_missing_matrix_with_facets_response_field_build_query(dummy_parent):
-    from snovault.elasticsearch.searches.fields import MissingMatrixWithFacetsResponseField
-    from snovault.elasticsearch.searches.queries import MissingMatrixQueryFactoryWithFacets
+    from snosearch.fields import MissingMatrixWithFacetsResponseField
+    from snosearch.queries import MissingMatrixQueryFactoryWithFacets
     from elasticsearch_dsl import Search
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
@@ -738,7 +728,7 @@ def test_searches_fields_missing_matrix_with_facets_response_field_build_query(d
 
 
 def test_searches_fields_search_base_get_search_base(dummy_parent):
-    from snovault.elasticsearch.searches.fields import SearchBaseResponseField
+    from snosearch.fields import SearchBaseResponseField
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
     )
@@ -760,7 +750,7 @@ def test_searches_fields_search_base_get_search_base(dummy_parent):
 
 
 def test_searches_fields_search_base_render(dummy_parent):
-    from snovault.elasticsearch.searches.fields import SearchBaseResponseField
+    from snosearch.fields import SearchBaseResponseField
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
     )
@@ -771,14 +761,14 @@ def test_searches_fields_search_base_render(dummy_parent):
 
 
 def test_searches_fields_audit_matrix_with_facets_response_field_init():
-    from snovault.elasticsearch.searches.fields import AuditMatrixWithFacetsResponseField
+    from snosearch.fields import AuditMatrixWithFacetsResponseField
     amwf = AuditMatrixWithFacetsResponseField()
     assert isinstance(amwf, AuditMatrixWithFacetsResponseField)
 
 
 def test_searches_fields_audit_matrix_with_facets_response_field_build_query(dummy_parent):
-    from snovault.elasticsearch.searches.fields import AuditMatrixWithFacetsResponseField
-    from snovault.elasticsearch.searches.queries import AuditMatrixQueryFactoryWithFacets
+    from snosearch.fields import AuditMatrixWithFacetsResponseField
+    from snosearch.queries import AuditMatrixQueryFactoryWithFacets
     from elasticsearch_dsl import Search
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
@@ -791,7 +781,7 @@ def test_searches_fields_audit_matrix_with_facets_response_field_build_query(dum
 
 
 def test_searches_fields_audit_matrix_with_facets_response_field_execute_query(dummy_parent, mocker):
-    from snovault.elasticsearch.searches.fields import AuditMatrixWithFacetsResponseField
+    from snosearch.fields import AuditMatrixWithFacetsResponseField
     from elasticsearch_dsl import Search
     mocker.patch.object(Search, 'execute')
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
