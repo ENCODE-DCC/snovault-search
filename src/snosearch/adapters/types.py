@@ -2,7 +2,7 @@ class TypeAdapter:
 
     def __init__(self, **kwargs):
         self.schema = kwargs.pop('schema', None)
-        self.subtypes = kwargs.pop('subtypes', [])
+        self.subtypes = kwargs.pop('subtypes', [kwargs.get('name')])
         self.item_type = kwargs.pop('item_type', None)
         self.factory = self
         self.type_info = self
