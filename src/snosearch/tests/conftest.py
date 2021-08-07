@@ -25,8 +25,8 @@ def dummy_registry(testing_types, testing_configs):
 
 @pytest.fixture
 def dummy_request(dummy_registry):
-    from pyramid.request import Request
-    dummy_request = Request({})
+    from snosearch.adapters.requests import DummyRequest
+    dummy_request = DummyRequest({})
     dummy_request.registry = dummy_registry
     return dummy_request
 
@@ -362,6 +362,7 @@ def testing_download_type():
 def testing_item_type():
     return {
         'name': 'Item',
+        'schema': {},
         'subtypes': [
             'TestingServerDefault',
             'TestingCustomEmbedSource',

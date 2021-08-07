@@ -220,7 +220,8 @@ def test_searches_queries_abstract_query_factory_get_properties_for_item_type(pa
         '@id': {
             'notSubmittable': True,
             'type': 'string',
-            'title': 'ID'},
+            'title': 'ID'
+        },
         'status': {
             'type': 'string'
         },
