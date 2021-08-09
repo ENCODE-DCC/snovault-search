@@ -21,4 +21,4 @@ jobs:
             pip install -e .[test]
       - run:
           name: Run tests
-          command: pytest
+          command: pytest --cov=snosearch
