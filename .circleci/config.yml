@@ -18,7 +18,10 @@ jobs:
           name: Install package
           command: |
             pip install --upgrade pip
+            pip install coveralls
             pip install -e .[test]
       - run:
           name: Run tests
-          command: pytest --cov=snosearch
+          command: |
+              pytest --cov=snosearch
+              coveralls
