@@ -79,6 +79,15 @@ def testing_search_schema_type():
                 }
             },
             'additionalProperties': False,
+            'facet_groups': [
+                {
+                    'title': 'Test group',
+                    'facet_fields': [
+                        'status',
+                        'name',
+                    ]
+                }
+            ],
             'facets': {
                 'status': {
                     'title': 'Status',
