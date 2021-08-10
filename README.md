@@ -3,6 +3,12 @@
 # snovault-search
 Framework-independent package for converting query strings to Elasticsearch queries.
 
+### Run tests
+```bash
+$ pip install -e .[test]
+$ pytest
+```
+
 ### Publish on PyPI
 Bump version in `setup.cfg`, then build and upload:
 ```bash
