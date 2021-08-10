@@ -2,3 +2,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/ENCODE-DCC/snovault-search/badge.svg?branch=dev)](https://coveralls.io/github/ENCODE-DCC/snovault-search?branch=dev)
 # snovault-search
 Framework-independent package for converting query strings to Elasticsearch queries.
+
+#### Publish on PyPI
+```bash
+$ python -m build
+$ twine upload dist/*
+```
