@@ -3,6 +3,28 @@
 # snovault-search
 Framework-independent package for converting query strings to Elasticsearch queries.
 
+### Example
+```python
+from snosearch.defaults import DEFAULT_ITEM_TYPES
+from snosearch.fields import BasicSearchResponseField
+from snosearch.parsers import ParamsParser
+from snosearch.responses import FieldedResponse
+
+
+def basic_search_view(request):
+    fr = FieldedResponse(
+        _meta={
+            'params_parser': ParamsParser(request)
+        },
+        response_fields=[
+            BasicSearchResponseField(
+                default_item_types=DEFAULT_ITEM_TYPES
+            )
+        ]
+    )
+    return fr.render()
+```
+
 ### Run tests
 ```bash
 $ pip install -e .[test]
