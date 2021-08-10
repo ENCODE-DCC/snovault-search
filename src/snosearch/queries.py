@@ -5,9 +5,9 @@ from elasticsearch_dsl import Search
 from antlr4 import IllegalStateException
 from lucenequery import dialects
 from lucenequery.prefixfields import prefixfields
-from pyramid.httpexceptions import HTTPBadRequest
 
 
+from .adapters.exceptions import get_default_exception
 from .configs import ExistsAggregationConfig
 from .configs import TermsAggregationConfig
 from .decorators import assert_none_returned
@@ -272,7 +272,7 @@ class AbstractQueryFactory:
             query = prefixfields(EMBEDDED, query, dialects.elasticsearch)
         except IllegalStateException:
             msg = "Invalid query: {}".format(query)
-            raise HTTPBadRequest(explanation=msg)
+            raise get_default_exception()(explanation=msg)
         return query.getText()
 
     def _get_default_item_types(self):

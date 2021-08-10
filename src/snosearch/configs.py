@@ -1,15 +1,7 @@
-import venusian
-
 from collections.abc import Mapping
 from .defaults import DEFAULT_TERMS_AGGREGATION_KWARGS
 from .defaults import DEFAULT_EXISTS_AGGREGATION_KWARGS
 from .interfaces import SEARCH_CONFIG
-
-
-def includeme(config):
-    registry = config.registry
-    registry[SEARCH_CONFIG] = SearchConfigRegistry()
-    config.add_directive('register_search_config', register_search_config)
 
 
 class Config(Mapping):
@@ -188,6 +180,7 @@ class SearchConfig(MutableConfig):
         'boost_values',
         'matrix',
         'fields',
+        'facet_groups',
     ]
 
     def __init__(self, name, config):
@@ -217,26 +210,3 @@ class SearchConfig(MutableConfig):
                 {}
             )
         )
-
-
-def register_search_config(config, name, factory):
-    config.action(
-        ('set-search-config', name),
-        config.registry[SEARCH_CONFIG].register_from_func,
-        args=(
-            name,
-            factory
-        )
-    )
-
-
-def search_config(name, **kwargs):
-    '''
-    Register a custom search config by name.
-    '''
-    def decorate(config):
-        def callback(scanner, factory_name, factory):
-            scanner.config.register_search_config(name, factory)
-        venusian.attach(config, callback, category='pyramid')
-        return config
-    return decorate

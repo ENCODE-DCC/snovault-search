@@ -1,8 +1,9 @@
 from functools import wraps
-from pyramid.httpexceptions import HTTPBadRequest
+
+from .adapters.exceptions import get_default_exception
 
 
-def assert_condition_returned(condition, error_message='', exception=HTTPBadRequest):
+def assert_condition_returned(condition, error_message='', exception=get_default_exception()):
     '''
     Decorator for checking return value of function. Results will
     be passed into condition function and error raised if True.
