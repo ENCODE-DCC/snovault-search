@@ -3,7 +3,7 @@
 # snovault-search
 Framework-independent package for converting query strings to Elasticsearch queries.
 
-#### Publish on PyPI
+### Publish on PyPI
 ```bash
 $ python -m build
 $ twine upload dist/*
