@@ -1,9 +1,9 @@
 import json
 
 from collections import OrderedDict
-from pyramid.response import Response
 from types import GeneratorType
 
+from .adapters.responses import get_response
 from .decorators import remove_from_return
 from .interfaces import APPLICATION_JSON
 from .mixins import AggsToFacetsMixin
@@ -48,7 +48,7 @@ class FieldedResponse:
         request = self.get_request()
         if request:
             return request.response
-        return Response()
+        return get_response()
 
     def _is_request_from_embed(self):
         request = self.get_request()
