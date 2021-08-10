@@ -4,6 +4,7 @@
 Framework-independent package for converting query strings to Elasticsearch queries.
 
 ### Publish on PyPI
+Bump version in `setup.cfg`.
 ```bash
 $ python -m build
 $ twine upload dist/*
