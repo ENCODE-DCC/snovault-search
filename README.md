@@ -3,6 +3,11 @@
 # snovault-search
 Framework-independent package for converting query strings to Elasticsearch queries.
 
+### Install
+```bash
+$ pip install snovault-search
+```
+
 ### Example
 ```python
 from snosearch.defaults import DEFAULT_ITEM_TYPES
