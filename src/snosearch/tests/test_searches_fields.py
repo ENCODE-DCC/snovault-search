@@ -47,6 +47,13 @@ def test_searches_fields_response_field_get_request(dummy_parent):
     assert isinstance(rf.get_request(), Request)
 
 
+def test_searches_fields_response_field_render(dummy_parent):
+    from snosearch.fields import ResponseField
+    rf = ResponseField()
+    with pytest.raises(NotImplementedError):
+        rf.render()
+
+
 def test_searches_fields_basic_search_response_field_init():
     from snosearch.fields import BasicSearchResponseField
     brf = BasicSearchResponseField()
@@ -83,6 +90,36 @@ def test_searches_fields_basic_search_response_execute_query(dummy_parent, mocke
     brf._build_query()
     brf._execute_query()
     assert Search.execute.call_count == 1
+
+
+def test_searches_fields_basic_search_response_format_results(dummy_parent, mocker):
+    from elasticsearch_dsl import Search
+    mocker.patch.object(Search, 'execute')
+    Search.execute.return_value = []
+    from snosearch.fields import BasicSearchResponseField
+    brf = BasicSearchResponseField()
+    brf.parent = dummy_parent
+    brf._build_query()
+    brf._execute_query()
+    assert Search.execute.call_count == 1
+    assert '@graph' not in brf.response
+    brf._format_results()
+    assert '@graph' in brf.response
+    assert list(brf.response['@graph']) == []
+
+
+def test_searches_fields_basic_search_response_render(dummy_parent, mocker):
+    from elasticsearch_dsl import Search
+    mocker.patch.object(Search, 'execute')
+    Search.execute.return_value = []
+    from snosearch.fields import BasicSearchResponseField
+    brf = BasicSearchResponseField()
+    brf.parent = dummy_parent
+    assert '@graph' not in brf.response
+    brf.render(parent=dummy_parent)
+    assert Search.execute.call_count == 1
+    assert '@graph' in brf.response
+    assert list(brf.response['@graph']) == []
 
 
 def test_searches_fields_basic_search_with_facets_response_field_init():
@@ -123,6 +160,25 @@ def test_searches_fields_basic_search_with_facets_response_execute_query(dummy_p
     assert Search.execute.call_count == 1
 
 
+def test_searches_fields_basic_search_with_facets_response_format_results(dummy_parent, mocker):
+    from elasticsearch_dsl import Search
+    mocker.patch.object(Search, 'execute')
+    Search.execute.return_value = mocker.MagicMock()
+    from snosearch.fields import BasicSearchWithFacetsResponseField
+    brf = BasicSearchWithFacetsResponseField()
+    brf.parent = dummy_parent
+    brf._build_query()
+    brf._execute_query()
+    assert Search.execute.call_count == 1
+    assert '@graph' not in brf.response
+    assert 'facets' not in brf.response
+    assert 'total' not in brf.response
+    brf._format_results()
+    assert '@graph' in brf.response
+    assert 'facets' in brf.response
+    assert 'total' in brf.response
+
+
 def test_searches_fields_basic_search_without_facets_response_field_init():
     from snosearch.fields import BasicSearchWithoutFacetsResponseField
     brf = BasicSearchWithoutFacetsResponseField()
@@ -142,6 +198,15 @@ def test_searches_fields_cached_facets_response_field_init():
     from snosearch.fields import CachedFacetsResponseField
     cfrf = CachedFacetsResponseField()
     assert isinstance(cfrf, CachedFacetsResponseField)
+
+
+def test_searches_fields_cached_facets_response_field_build_query(dummy_parent):
+    from snosearch.fields import CachedFacetsResponseField
+    from elasticsearch_dsl import Search
+    cfrf = CachedFacetsResponseField()
+    cfrf.parent = dummy_parent
+    cfrf._build_query()
+    assert isinstance(cfrf.query, Search)
 
 
 def test_searches_fields_collection_search_with_facets_response_field_init():
@@ -365,6 +430,18 @@ def test_searches_fields_notification_response_field_set_status_code(dummy_paren
     assert nr.parent._meta['params_parser']._request.response.status_code == 200
     nr._set_status_code(404)
     assert nr.parent._meta['params_parser']._request.response.status_code == 404
+
+
+def test_searches_fields_notification_response_field_render(dummy_parent):
+    from snosearch.fields import NotificationResponseField
+    nr = NotificationResponseField()
+    dummy_parent.response['total'] = 123
+    nr.render(parent=dummy_parent)
+    assert nr.parent._meta['params_parser']._request.response.status_code == 200
+    del dummy_parent.response['total']
+    nr.render(parent=dummy_parent)
+    assert nr.parent._meta['params_parser']._request.response.status_code == 404
+    assert dummy_parent.response == {}
 
 
 def test_searches_fields_filters_response_field_init(dummy_parent):

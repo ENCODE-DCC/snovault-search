@@ -28,4 +28,3 @@ class DummyRequest(Request):
         def route_path(self, context):
             if context == JSONLD_CONTEXT:
                     return '/terms/'
-            return super().route_path(context)
