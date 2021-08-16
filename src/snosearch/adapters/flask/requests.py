@@ -15,6 +15,8 @@ class ArgsAdapter:
 
 class RequestAdapter:
 
+    __parent__ = None
+
     def __init__(self, request):
         self._request = request
 
@@ -32,9 +34,11 @@ class RequestAdapter:
         )
 
     @property
-    def registry(self):
-        return self._request.registry
+    def effective_principals(self):
+        return ['system.Everyone']
 
-    @registry.setter
-    def registry(self, value):
-        self._request.registry = value
+    def has_permission(self, action):
+        return True
+
+    def route_path(self, context):
+        raise NotImplementedError

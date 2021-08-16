@@ -49,7 +49,9 @@ def flask_dummy_request(dummy_registry):
 @pytest.fixture
 def dummy_request(request, pyramid_dummy_request, flask_dummy_request):
     if hasattr(request, 'param') and request.param == 'flask':
+        print('returning flask')
         return flask_dummy_request
+    print('returning pyramid')
     return pyramid_dummy_request
 
 

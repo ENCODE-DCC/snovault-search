@@ -1,8 +1,20 @@
 import pytest
 
 
+integrations = [
+    'pyramid',
+    'flask',
+]
+
+
 @pytest.fixture
-def params_parser(dummy_request):
+def params_parser(request, pyramid_dummy_request, flask_dummy_request):
+    if hasattr(request, 'param') and request.param == 'flask':
+        print('setting flask req')
+        dummy_request = flask_dummy_request
+    else:
+        print('setting pyramid req')
+        dummy_request = pyramid_dummy_request
     from snosearch.parsers import ParamsParser
     from snosearch.interfaces import ELASTIC_SEARCH
     from elasticsearch import Elasticsearch
@@ -19,7 +31,14 @@ def params_parser(dummy_request):
 
 
 @pytest.fixture
-def params_parser_snovault_types(dummy_request):
+def params_parser_snovault_types(request, pyramid_dummy_request, flask_dummy_request):
+    if hasattr(request, 'param') and request.param == 'flask':
+        print('setting flask req')
+        dummy_request = flask_dummy_request
+    else:
+        print('setting pyramid req')
+        dummy_requuest = pyramid_dummy_request
+    dummy_request = flask_dummy_request
     from snosearch.parsers import ParamsParser
     from snosearch.interfaces import ELASTIC_SEARCH
     from elasticsearch import Elasticsearch
@@ -37,6 +56,11 @@ def test_searches_queries_abstract_query_factory_init():
     assert isinstance(aq, AbstractQueryFactory)
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_or_create_search(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -49,6 +73,11 @@ def test_searches_queries_abstract_query_factory_get_or_create_search(params_par
     assert isinstance(aq.search, Search)
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_client(params_parser):
     from snosearch.queries import AbstractQueryFactory
     from elasticsearch import Elasticsearch
@@ -60,6 +89,11 @@ def test_searches_queries_abstract_query_factory_get_client(params_parser):
     assert isinstance(c, Elasticsearch)
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_index(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.interfaces import RESOURCES_INDEX
@@ -69,6 +103,11 @@ def test_searches_queries_abstract_query_factory_get_index(params_parser, mocker
     assert aq._get_index() == RESOURCES_INDEX
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_index_variations(dummy_request):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.parsers import ParamsParser
@@ -149,6 +188,11 @@ def test_searches_queries_abstract_query_factory_get_index_variations(dummy_requ
     assert aq._get_index() == ['testing_search_schema']
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_wildcard_in_item_types(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -157,6 +201,11 @@ def test_searches_queries_abstract_query_factory_wildcard_in_item_types(params_p
     assert aq._wildcard_in_item_types([('type', '*')])
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_item_types(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -166,6 +215,11 @@ def test_searches_queries_abstract_query_factory_get_item_types(params_parser):
     ]
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_principals(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -173,6 +227,11 @@ def test_searches_queries_abstract_query_factory_get_principals(params_parser):
     assert principals == ['system.Everyone']
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_registered_types(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
@@ -180,6 +239,11 @@ def test_searches_queries_abstract_query_factory_get_registered_types(params_par
     assert isinstance(registered_types, dict)
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_search_config_registry(params_parser_snovault_types):
     from snosearch.configs import SearchConfigRegistry
     from snosearch.queries import AbstractQueryFactory
@@ -188,6 +252,11 @@ def test_searches_queries_abstract_query_factory_get_search_config_registry(para
     assert isinstance(search_config_registry, SearchConfigRegistry)
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_factory_for_item_type(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
@@ -195,6 +264,11 @@ def test_searches_queries_abstract_query_factory_get_factory_for_item_type(param
     assert factory.item_type == 'testing_search_schema'
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_schema_for_item_type(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
@@ -202,6 +276,11 @@ def test_searches_queries_abstract_query_factory_get_schema_for_item_type(params
     assert isinstance(schema, dict)
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_search_configs_by_names(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.configs import SearchConfig
@@ -212,6 +291,11 @@ def test_searches_queries_abstract_query_factory_get_search_configs_by_names(par
     assert configs[0].name == 'TestingSearchSchema'
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_properties_for_item_type(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
@@ -259,6 +343,11 @@ def test_searches_queries_abstract_query_factory_get_properties_for_item_type(pa
     assert actual['accession']['title'] == 'Accession'
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_subtypes_for_item_type(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
@@ -280,18 +369,33 @@ def test_searches_queries_abstract_query_factory_get_subtypes_for_item_type(para
     ])
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_name_for_item_type(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
     assert aq._get_name_for_item_type('TestingSearchSchema') == 'TestingSearchSchema'
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_collection_name_for_item_type(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
     assert aq._get_collection_name_for_item_type('TestingSearchSchema') == 'testing_search_schema'
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_facets_from_configs(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
@@ -304,12 +408,22 @@ def test_searches_queries_abstract_query_factory_get_facets_from_configs(params_
     assert len(expected) == len(facets)
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_base_columns(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
     assert aq._get_base_columns() == {'@id': {'title': 'ID'}}
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_default_columns_for_item_type(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
@@ -323,6 +437,11 @@ def test_searches_queries_abstract_query_factory_get_default_columns_for_item_ty
     assert aq._get_default_columns_for_item_type('TestingDownload') == {}
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_columns_for_item_type(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
@@ -335,6 +454,11 @@ def test_searches_queries_abstract_query_factory_get_columns_for_item_type(param
     assert len(expected) == len(columns)
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_columns_for_item_types(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -361,6 +485,11 @@ def test_searches_queries_abstract_query_factory_get_columns_for_item_types(dumm
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_invalid_item_types(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
@@ -369,6 +498,11 @@ def test_searches_queries_abstract_query_factory_get_invalid_item_types(params_p
     assert not invalid_types
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_validate_item_types(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     from pyramid.exceptions import HTTPBadRequest
@@ -380,6 +514,11 @@ def test_searches_queries_abstract_query_factory_validate_item_types(params_pars
         aq.validate_item_types(item_types)
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_normalize_item_types(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
@@ -391,6 +530,11 @@ def test_searches_queries_abstract_query_factory_normalize_item_types(params_par
     assert normalized_item_types == ['TestingSearchSchema']
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_collection_names_for_item_types(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
@@ -405,6 +549,11 @@ def test_searches_queries_abstract_query_factory_get_collection_names_for_item_t
     ) == ['testing_search_schema', 'testing_post_put_patch']
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_escape_regex_slashes(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     from pyramid.exceptions import HTTPBadRequest
@@ -424,6 +573,11 @@ def test_searches_queries_abstract_query_factory_escape_regex_slashes(params_par
     ) == '\\/targets\\/H3K9me3-human\\/'
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_escape_fuzzy_tilde(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     from pyramid.exceptions import HTTPBadRequest
@@ -443,6 +597,11 @@ def test_searches_queries_abstract_query_factory_escape_fuzzy_tilde(params_parse
     ) == '/targets/H3K9me3-human/\\~'
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_escape_boost_caret(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     from pyramid.exceptions import HTTPBadRequest
@@ -462,6 +621,11 @@ def test_searches_queries_abstract_query_factory_escape_boost_caret(params_parse
     ) == '/targets/H3K9me3-human/'
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_escape_reserved_query_string_characters(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     from pyramid.exceptions import HTTPBadRequest
@@ -490,6 +654,11 @@ def test_searches_queries_abstract_query_factory_escape_reserved_query_string_ch
     ) == '\\/targets\\/H3K9me3-human\\~\\/'
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_validated_query_string_query(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     from pyramid.exceptions import HTTPBadRequest
@@ -510,6 +679,11 @@ def test_searches_queries_abstract_query_factory_validated_query_string_query(pa
             aq._validated_query_string_query(c)
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_default_item_types(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(
@@ -531,6 +705,11 @@ def test_searches_queries_abstract_query_factory_get_default_item_types(params_p
     assert not default_item_types
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_default_item_types_mode_picker(dummy_request):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.parsers import ParamsParser
@@ -546,6 +725,11 @@ def test_searches_queries_abstract_query_factory_get_default_item_types_mode_pic
     assert default_item_types == [('type', 'Item')]
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_default_facets(params_parser):
     from snosearch.queries import AbstractQueryFactory
     from pyramid.testing import DummyResource
@@ -575,7 +759,11 @@ def test_searches_queries_abstract_query_factory_get_default_facets(params_parse
     ]
 
 
-
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_facets_from_configs(dummy_request):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.parsers import ParamsParser
@@ -602,6 +790,11 @@ def test_searches_queries_abstract_query_factory_get_facets_from_configs(dummy_r
     ]
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_default_and_maybe_item_facets(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     from pyramid.testing import DummyResource
@@ -621,6 +814,11 @@ def test_searches_queries_abstract_query_factory_get_default_and_maybe_item_face
     assert all(e in actual for e in expected)
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [('pyramid', 'pyramid'), ('flask', 'flask')],
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_query_string_query(params_parser, dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
