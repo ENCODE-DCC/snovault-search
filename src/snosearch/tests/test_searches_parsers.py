@@ -1,6 +1,17 @@
 import pytest
 
 
+integrations = [
+    'pyramid',
+    'flask',
+]
+
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_init(dummy_request):
     from snosearch.parsers import ParamsParser
     p = ParamsParser(dummy_request)
@@ -8,6 +19,11 @@ def test_searches_parsers_params_parser_init(dummy_request):
     assert p._request is dummy_request
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_query_string(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = 'type=Experiment'
@@ -16,6 +32,11 @@ def test_searches_parsers_params_parser_query_string(dummy_request):
     assert p._request.params.getall('type') == ['Experiment']
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_query_string_not(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = 'type!=Experiment'
@@ -23,6 +44,11 @@ def test_searches_parsers_params_parser_query_string_not(dummy_request):
     assert 'type!' in p._request.params
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_filters_by_condition_none(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = 'type=Experiment&type=File&field=status'
@@ -34,6 +60,11 @@ def test_searches_parsers_params_parser_get_filters_by_condition_none(dummy_requ
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_filters_by_condition_key_field(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = 'type=Experiment&type=File&field=status'
@@ -45,6 +76,11 @@ def test_searches_parsers_params_parser_get_filters_by_condition_key_field(dummy
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_filters_by_condition_key_type(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = 'type=Experiment&type=File&field=status'
@@ -57,6 +93,11 @@ def test_searches_parsers_params_parser_get_filters_by_condition_key_type(dummy_
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_filters_by_condition_value_status(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = 'type=Experiment&type=File&field=status'
@@ -68,6 +109,11 @@ def test_searches_parsers_params_parser_get_filters_by_condition_value_status(du
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_filters_by_condition_key_type_value_file(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = 'type=Experiment&type=File&field=status'
@@ -79,6 +125,11 @@ def test_searches_parsers_params_parser_get_filters_by_condition_key_type_value_
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_filters_by_condition_contains_letter(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = 'type=Experiment&type=File&field=status'
@@ -90,6 +141,11 @@ def test_searches_parsers_params_parser_get_filters_by_condition_contains_letter
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_key_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -102,6 +158,11 @@ def test_searches_parsers_params_parser_get_key_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_type_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -115,6 +176,11 @@ def test_searches_parsers_params_parser_get_type_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_search_term_filters_empty(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -124,6 +190,11 @@ def test_searches_parsers_params_parser_get_search_term_filters_empty(dummy_requ
     assert p.get_search_term_filters() == []
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_search_term_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -139,6 +210,11 @@ def test_searches_parsers_params_parser_get_search_term_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_must_match_search_term_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -153,6 +229,11 @@ def test_searches_parsers_params_parser_get_must_match_search_term_filters(dummy
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_must_not_match_search_term_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -166,6 +247,11 @@ def test_searches_parsers_params_parser_get_must_not_match_search_term_filters(d
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_advanced_query_filters_empty(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -175,6 +261,11 @@ def test_searches_parsers_params_parser_get_advanced_query_filters_empty(dummy_r
     assert p.get_advanced_query_filters() == []
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_advanced_query_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -188,6 +279,11 @@ def test_searches_parsers_params_parser_get_advanced_query_filters(dummy_request
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_must_match_advanced_query_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -203,6 +299,11 @@ def test_searches_parsers_params_parser_get_must_match_advanced_query_filters(du
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_must_not_match_advanced_query_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -215,6 +316,11 @@ def test_searches_parsers_params_parser_get_must_not_match_advanced_query_filter
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_field_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -227,6 +333,11 @@ def test_searches_parsers_params_parser_get_field_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_is_param(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -238,6 +349,11 @@ def test_searches_parsers_params_parser_is_param(dummy_request):
     assert not p.is_param(key='files.file_type', value='bam')
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_must_match_filter(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -251,6 +367,11 @@ def test_searches_parsers_params_parser_get_must_match_filter(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_must_not_match_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -261,6 +382,11 @@ def test_searches_parsers_params_parser_get_must_not_match_filters(dummy_request
         ('type!', 'Experiment')
     ]
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_inequality_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -277,6 +403,11 @@ def test_searches_parsers_params_parser_get_inequality_filters(dummy_request):
         ('quality_metric.RSC1!', 'lt:30'),
     ]
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_non_inequality_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -293,6 +424,11 @@ def test_searches_parsers_params_parser_get_non_inequality_filters(dummy_request
         ('file_size', '*'),
     ]
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_must_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -308,6 +444,11 @@ def test_searches_parsers_params_parser_get_must_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_must_not_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -322,6 +463,11 @@ def test_searches_parsers_params_parser_get_must_not_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_exists_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -337,6 +483,11 @@ def test_searches_parsers_params_parser_get_exists_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_not_exists_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -351,6 +502,11 @@ def test_searches_parsers_params_parser_get_not_exists_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_range_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -368,6 +524,11 @@ def test_searches_parsers_params_parser_get_range_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_not_range_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -382,6 +543,11 @@ def test_searches_parsers_params_parser_get_not_range_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_chain_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -396,6 +562,11 @@ def test_searches_parsers_params_parser_chain_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_query_string(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -406,6 +577,11 @@ def test_searches_parsers_params_parser_get_query_string(dummy_request):
     assert dummy_request.environ['QUERY_STRING'] == p.get_query_string()
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_filter_and_query_string(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -436,6 +612,11 @@ def test_searches_parsers_params_parser_filter_and_query_string(dummy_request):
     assert dummy_request.environ['QUERY_STRING'] == p.get_query_string()
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_filter_and_query_string_space(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -457,6 +638,11 @@ def test_searches_parsers_params_parser_filter_and_query_string_space(dummy_requ
     ) == 'file_type=bed+bed3%2B'
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_filtered_is_param(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -479,6 +665,11 @@ def test_searches_parsers_params_parser_filtered_is_param(dummy_request):
     )
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_keys_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -493,6 +684,11 @@ def test_searches_parsers_params_parser_get_keys_filters(dummy_request):
     assert p.get_keys_filters() == []
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_not_keys_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -514,6 +710,11 @@ def test_searches_parsers_params_parser_get_not_keys_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_wildcard_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -527,6 +728,11 @@ def test_searches_parsers_params_parser_get_wildcard_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_non_wildcard_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -541,6 +747,11 @@ def test_searches_parsers_params_parser_get_non_wildcard_filters(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_remove_key_and_value_pair_from_filters(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -612,6 +823,11 @@ def test_searches_parsers_params_parser_remove_key_and_value_pair_from_filters(d
         p.remove_key_and_value_pair_from_filters(value='*')
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_keys_filters_not_flag(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -673,6 +889,11 @@ def test_searches_parsers_params_parser_keys_filters_not_flag(dummy_request):
     ) == 'status=released'
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_from(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -690,6 +911,11 @@ def test_searches_parsers_params_parser_get_from(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_limit(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -707,6 +933,11 @@ def test_searches_parsers_params_parser_get_limit(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_sort(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -718,6 +949,11 @@ def test_searches_parsers_params_parser_get_sort(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_frame(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -729,6 +965,11 @@ def test_searches_parsers_params_parser_get_frame(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_mode(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -743,6 +984,11 @@ def test_searches_parsers_params_parser_get_mode(dummy_request):
     )[0] == 'picker'
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_debug(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -754,6 +1000,11 @@ def test_searches_parsers_params_parser_get_debug(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_cart(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -766,6 +1017,11 @@ def test_searches_parsers_params_parser_get_cart(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_get_config(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -780,6 +1036,11 @@ def test_searches_parsers_params_parser_get_config(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_param_keys_to_list(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -794,6 +1055,11 @@ def test_searches_parsers_params_parser_param_keys_to_list(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_param_values_to_list(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -808,6 +1074,11 @@ def test_searches_parsers_params_parser_param_values_to_list(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_param_remove_not_flag(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -822,6 +1093,11 @@ def test_searches_parsers_params_parser_param_remove_not_flag(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_params_to_list(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -842,6 +1118,11 @@ def test_searches_parsers_params_parser_params_to_list(dummy_request):
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_params_get_one_value(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -851,6 +1132,11 @@ def test_searches_parsers_params_parser_params_get_one_value(dummy_request):
     assert p.get_one_value() == 'embedded'
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_params_coerce_value_to_int_or_return_none(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -862,6 +1148,11 @@ def test_searches_parsers_params_parser_params_coerce_value_to_int_or_return_non
     assert p.coerce_value_to_int_or_return_none('all') is None
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_params_parser_group_values_by_key(dummy_request):
     from snosearch.parsers import ParamsParser
     dummy_request.environ['QUERY_STRING'] = (
@@ -883,6 +1174,11 @@ def test_searches_parsers_params_parser_group_values_by_key(dummy_request):
     }
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searchers_parsers_params_parser_split_filters(dummy_request):
     from snosearch.defaults import NOT_FILTERS
     from snosearch.parsers import ParamsParser
@@ -938,6 +1234,11 @@ def test_searchers_parsers_params_parser_split_filters(dummy_request):
             assert v == []
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_init(dummy_request):
     from snosearch.parsers import MutableParamsParser
     mpp = MutableParamsParser(dummy_request)
@@ -950,6 +1251,11 @@ def test_searches_parsers_mutable_params_parser_init(dummy_request):
 ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_get_original_params(dummy_request):
     from snosearch.parsers import MutableParamsParser
     mpp = MutableParamsParser(dummy_request)
@@ -959,6 +1265,11 @@ def test_searches_parsers_mutable_params_parser_get_original_params(dummy_reques
     assert mpp._get_original_params() == [('type', 'Snowflake')]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_get_original_query_string(dummy_request):
     from snosearch.parsers import MutableParamsParser
     mpp = MutableParamsParser(dummy_request)
@@ -968,6 +1279,11 @@ def test_searches_parsers_mutable_params_parser_get_original_query_string(dummy_
     assert mpp._get_original_query_string() == 'type=Snowflake&status%21=deleted'
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_validate_param(dummy_request):
     from snosearch.parsers import MutableParamsParser
     mpp = MutableParamsParser(dummy_request)
@@ -980,6 +1296,11 @@ def test_searches_parsers_mutable_params_parser_validate_param(dummy_request):
         mpp._validate_param(('abc', 123, 'cdf'))
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_validate_params(dummy_request):
     from snosearch.parsers import MutableParamsParser
     mpp = MutableParamsParser(dummy_request)
@@ -990,6 +1311,11 @@ def test_searches_parsers_mutable_params_parser_validate_params(dummy_request):
         mpp._validate_params(('type', 'Snowflake'))
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_append(dummy_request):
     from snosearch.parsers import MutableParamsParser
     mpp = MutableParamsParser(dummy_request)
@@ -1021,6 +1347,11 @@ def test_searches_parsers_mutable_params_parser_append(dummy_request):
     assert mpp.params == [('status', 'released'), ('thing', 'other_thing')]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_extend(dummy_request):
     from snosearch.parsers import MutableParamsParser
     mpp = MutableParamsParser(dummy_request)
@@ -1041,6 +1372,11 @@ def test_searches_parsers_mutable_params_parser_extend(dummy_request):
         mpp.extend(('x', 'y'))
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_drop_key(dummy_request):
     from snosearch.parsers import MutableParamsParser
     mpp = MutableParamsParser(dummy_request)
@@ -1055,6 +1391,11 @@ def test_searches_parsers_mutable_params_parser_drop_key(dummy_request):
     assert mpp.params == [('type', 'Snowflake')]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_drop_key_and_value(dummy_request):
     from snosearch.parsers import MutableParamsParser
     mpp = MutableParamsParser(dummy_request)
@@ -1067,6 +1408,11 @@ def test_searches_parsers_mutable_params_parser_drop_key_and_value(dummy_request
     assert mpp.params == []
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_drop(dummy_request):
     from snosearch.parsers import MutableParamsParser
     mpp = MutableParamsParser(dummy_request)
@@ -1081,6 +1427,11 @@ def test_searches_parsers_mutable_params_parser_drop(dummy_request):
     assert mpp.params == [('status', 'deleted')]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_deduplicate(dummy_request):
     from snosearch.parsers import MutableParamsParser
     mpp = MutableParamsParser(dummy_request)
@@ -1111,6 +1462,11 @@ def test_searches_parsers_mutable_params_parser_deduplicate(dummy_request):
     ]
 
     
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_get_request_with_new_query_string(dummy_request):
     from snosearch.parsers import MutableParamsParser
     dummy_request.query_string = 'type=Snowflake&status=released&format=json'
@@ -1148,6 +1504,11 @@ def test_searches_parsers_mutable_params_parser_get_request_with_new_query_strin
     assert request.query_string == 'type=Snowflake&status=released&format=json'
     
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_get_request_with_new_query_string_special_values(dummy_request):
     from snosearch.parsers import MutableParamsParser
     dummy_request.query_string = 'type=Snowflake&subtype=abc123+abc3%2B'
@@ -1162,12 +1523,22 @@ def test_searches_parsers_mutable_params_parser_get_request_with_new_query_strin
     assert mpp.get_request_with_new_query_string().query_string == 'type=Snowflake'
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_query_string_init(dummy_request):
     from snosearch.parsers import QueryString
     qs = QueryString(dummy_request)
     assert isinstance(qs, QueryString)
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_query_string__repr__(dummy_request):
     from snosearch.parsers import QueryString
     dummy_request.query_string = 'type=Snowflake&type!=Snowball'
@@ -1181,6 +1552,11 @@ def test_searches_parsers_query_string__repr__(dummy_request):
     assert str(qs) == 'type=Snowball&status%21=revoked&files.file_type=bed+bed6%2B'
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_parsers_mutable_params_parser_clear(dummy_request):
     from snosearch.parsers import MutableParamsParser
     dummy_request.query_string = 'type=Snowflake&status=released&format=json'
