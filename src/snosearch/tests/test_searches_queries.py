@@ -1731,6 +1731,11 @@ def test_searches_queries_abstract_query_factory_get_return_fields(params_parser
     assert len(expected) == len(actual)
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_combine_search_term_queries(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -1776,6 +1781,11 @@ def test_searches_queries_abstract_query_factory_combine_search_term_queries(dum
     assert combined_search_terms is None
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_facets(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     from pyramid.testing import DummyResource
@@ -1797,12 +1807,22 @@ def test_searches_queries_abstract_query_factory_get_facets(params_parser_snovau
     assert aq._get_facets() == []
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_facet_size(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
     assert aq._get_facet_size() is None
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_boost_values_for_item_type(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -1811,6 +1831,11 @@ def test_searches_queries_abstract_query_factory_get_boost_values_for_item_type(
     ) == {'accession': 1.0, 'status': 1.0, 'label': 1.0}
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_config_param_values(dummy_request):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.configs import SearchConfig
@@ -1843,6 +1868,11 @@ def test_searches_queries_abstract_query_factory_get_config_param_values(dummy_r
     assert configs == []
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_configs_from_config_param_values(dummy_request):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.configs import SearchConfig
@@ -1860,6 +1890,11 @@ def test_searches_queries_abstract_query_factory_get_configs_from_config_param_v
     assert len(aq._get_configs_from_item_types()) == 0
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_configs_from_configs_from_item_types(dummy_request):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.configs import SearchConfig
@@ -1877,6 +1912,11 @@ def test_searches_queries_abstract_query_factory_get_configs_from_configs_from_i
     assert len(aq._get_configs_from_config_param_values()) == 0
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_configs_from_param_values_or_item_types(dummy_request):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.configs import SearchConfig
@@ -1910,6 +1950,11 @@ def test_searches_queries_abstract_query_factory_get_configs_from_param_values_o
     assert configs[1].name == 'TestConfigItem'
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_show_internal_audits(dummy_request):
     from pyramid.testing import DummyResource
     from pyramid.security import Allow
@@ -1935,6 +1980,11 @@ def test_searches_queries_abstract_query_factory_show_internal_audits(dummy_requ
     assert aq._show_internal_audits() == False
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_audit_facets(dummy_request):
     from pyramid.testing import DummyResource
     from pyramid.security import Allow
@@ -1961,6 +2011,11 @@ def test_searches_queries_abstract_query_factory_get_audit_facets(dummy_request)
     assert aq._get_audit_facets() == BASE_AUDIT_FACETS
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_prefix_value(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -1970,6 +2025,11 @@ def test_searches_queries_abstract_query_factory_prefix_value(params_parser):
     ) == 'embedded.uuid'
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_prefix_values(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -1979,6 +2039,11 @@ def test_searches_queries_abstract_query_factory_prefix_values(params_parser):
     ) == ['embedded.uuid', 'embedded.status', 'embedded.@type']
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_bool_filter_query(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -2008,6 +2073,11 @@ def test_searches_queries_abstract_query_factory_make_bool_filter_query(params_p
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_bool_filter_query_must_not(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2041,6 +2111,11 @@ def test_searches_queries_abstract_query_factory_make_bool_filter_query_must_not
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_bool_filter_query_must_and_must_not(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2074,6 +2149,11 @@ def test_searches_queries_abstract_query_factory_make_bool_filter_query_must_and
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_bool_filter_and_query_context(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -2137,6 +2217,11 @@ def test_searches_queries_abstract_query_factory_make_bool_filter_and_query_cont
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_filter_aggregation_bool_context(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2163,6 +2248,11 @@ def test_searches_queries_abstract_query_factory_make_filter_aggregation_bool_co
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_filter_and_subaggregation(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2208,6 +2298,11 @@ def test_searches_queries_abstract_query_factory_make_filter_and_subaggregation(
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_filter_and_subaggregation_bool(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2279,6 +2374,11 @@ def test_searches_queries_abstract_query_factory_make_filter_and_subaggregation_
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_query_string_query(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2296,6 +2396,11 @@ def test_searches_queries_abstract_query_factory_make_query_string_query(params_
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_must_equal_terms_query(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2310,6 +2415,11 @@ def test_searches_queries_abstract_query_factory_make_must_equal_terms_query(par
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_must_equal_terms_queries_from_params(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2329,6 +2439,11 @@ def test_searches_queries_abstract_query_factory_make_must_equal_terms_queries_f
     assert all(e in actual for e in expected)
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_field_must_exist_query(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2342,6 +2457,11 @@ def test_searches_queries_abstract_query_factory_make_field_must_exist_query(par
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_field_must_exist_queries_from_params(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2361,6 +2481,11 @@ def test_searches_queries_abstract_query_factory_make_field_must_exist_queries_f
     assert all(e in actual for e in expected)
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_convert_terms_to_range_syntax(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2384,6 +2509,11 @@ def test_searches_queries_abstract_query_factory_convert_terms_to_range_syntax(p
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_range_query(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2401,6 +2531,11 @@ def test_searches_queries_abstract_query_factory_make_range_query(params_parser)
     }
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_range_queries_from_params(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -2448,6 +2583,11 @@ def test_searches_queries_abstract_query_factory_make_range_queries_from_params(
     assert all(e in actual for e in expected)
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_default_filters(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser_snovault_types)
@@ -2464,6 +2604,11 @@ def test_searches_queries_abstract_query_factory_make_default_filters(params_par
     }
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_default_filters_default_types(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -2489,6 +2634,11 @@ def test_searches_queries_abstract_query_factory_make_default_filters_default_ty
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_terms_aggregation(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2506,6 +2656,11 @@ def test_searches_queries_abstract_query_factory_make_terms_aggregation(params_p
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_exists_aggregation(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2530,6 +2685,11 @@ def test_searches_queries_abstract_query_factory_make_exists_aggregation(params_
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_stats_aggregation(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -2551,6 +2711,11 @@ def test_searches_queries_abstract_query_factory_map_param_to_elasticsearch_fiel
     assert aq._map_param_to_elasticsearch_field('status') == 'embedded.status'
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_map_param_keys_to_elasticsearch_fields(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -2572,6 +2737,11 @@ def test_searches_queries_abstract_query_factory_map_param_keys_to_elasticsearch
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_map_param_values_to_elasticsearch_fields(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -2594,6 +2764,11 @@ def test_searches_queries_abstract_query_factory_map_param_values_to_elasticsear
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_simple_query_string_query(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -2629,6 +2804,11 @@ def test_searches_queries_abstract_query_factory_add_simple_query_string_query(d
     )
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_query_string_query(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -2730,6 +2910,11 @@ def test_searches_queries_abstract_query_factory_add_query_string_query(dummy_re
     )
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_query_string_query_and_simple_query_string_query(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -2790,6 +2975,11 @@ def test_searches_queries_abstract_query_factory_add_query_string_query_and_simp
     assert actual_simple_query_string == expected_simple_query_string
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_query_string_query_with_type(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -2824,6 +3014,12 @@ def test_searches_queries_abstract_query_factory_add_query_string_query_with_typ
         == set(expected_query['query']['query_string']['fields'])
     )
 
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_simple_query_string_query_with_type(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -2859,6 +3055,11 @@ def test_searches_queries_abstract_query_factory_add_simple_query_string_query_w
     )
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_query_string_query_with_default_type(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -2898,7 +3099,12 @@ def test_searches_queries_abstract_query_factory_add_query_string_query_with_def
         == set(expected_query['query']['query_string']['fields'])
     )
 
-    
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_simple_query_string_query_with_default_type(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -2939,6 +3145,11 @@ def test_searches_queries_abstract_query_factory_add_simple_query_string_query_w
     )
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_query_string_query_no_search_term(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -2951,6 +3162,11 @@ def test_searches_queries_abstract_query_factory_add_query_string_query_no_searc
     assert aq.search is None
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_simple_query_string_query_no_search_term(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -2963,6 +3179,11 @@ def test_searches_queries_abstract_query_factory_add_simple_query_string_query_n
     assert aq.search is None
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_must_equal_terms_filter(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -2990,6 +3211,11 @@ def test_searches_queries_abstract_query_factory_add_must_equal_terms_filter(par
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_must_equal_terms_post_filter(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -3006,6 +3232,11 @@ def test_searches_queries_abstract_query_factory_add_must_equal_terms_post_filte
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_must_not_equal_terms_post_filter(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -3026,6 +3257,11 @@ def test_searches_queries_abstract_query_factory_add_must_not_equal_terms_post_f
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_must_not_equal_terms_filter(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -3072,6 +3308,11 @@ def test_searches_queries_abstract_query_factory_add_field_must_exist_filter(par
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_field_must_exist_post_filter(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -3091,6 +3332,11 @@ def test_searches_queries_abstract_query_factory_add_field_must_exist_post_filte
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_field_must_exist_filter_multiple(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -3112,6 +3358,11 @@ def test_searches_queries_abstract_query_factory_add_field_must_exist_filter_mul
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_field_must_not_exist_filter(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -3127,6 +3378,11 @@ def test_searches_queries_abstract_query_factory_add_field_must_not_exist_filter
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_field_must_not_exist_post_filter(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -3146,6 +3402,11 @@ def test_searches_queries_abstract_query_factory_add_field_must_not_exist_post_f
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_field_must_and_must_not_exist_filter(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -3167,6 +3428,11 @@ def test_searches_queries_abstract_query_factory_add_field_must_and_must_not_exi
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_terms_aggregation(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -3184,6 +3450,11 @@ def test_searches_queries_abstract_query_factory_add_terms_aggregation(params_pa
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_split_filter_queries(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -3216,6 +3487,11 @@ def test_searches_queries_abstract_query_factory_make_split_filter_queries(param
     assert [e.to_dict() for e in not_ranges] == []
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_split_filter_queries_wildcards(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -3246,6 +3522,11 @@ def test_searches_queries_abstract_query_factory_make_split_filter_queries_wildc
     assert [r.to_dict() for r in not_ranges] == []
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_split_filter_queries_ranges(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -3287,6 +3568,11 @@ def test_searches_queries_abstract_query_factory_make_split_filter_queries_range
     ]
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_make_filter_aggregation(params_parser):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -3305,6 +3591,11 @@ def test_searches_queries_abstract_query_factory_make_filter_aggregation(params_
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_must_equal_terms_post_filter(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -3323,6 +3614,11 @@ def test_searches_queries_abstract_query_factory_add_must_equal_terms_post_filte
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_must_not_equal_terms_post_filter(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -3345,6 +3641,11 @@ def test_searches_queries_abstract_query_factory_add_must_not_equal_terms_post_f
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_must_not_equal_terms_filter(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -3378,6 +3679,11 @@ def test_searches_queries_abstract_query_factory_add_must_not_equal_terms_filter
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_field_must_exist_filter(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -3416,6 +3722,11 @@ def test_searches_queries_abstract_query_factory_add_field_must_exist_post_filte
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_field_must_exist_filter_multiple(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -3456,6 +3767,11 @@ def test_searches_queries_abstract_query_factory_add_field_must_not_exist_filter
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_field_must_not_exist_post_filter(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -3477,6 +3793,11 @@ def test_searches_queries_abstract_query_factory_add_field_must_not_exist_post_f
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_field_must_and_must_not_exist_filter(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -3500,6 +3821,11 @@ def test_searches_queries_abstract_query_factory_add_field_must_and_must_not_exi
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_terms_aggregation(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -3539,6 +3865,11 @@ def test_searches_queries_abstract_query_factory_add_terms_aggregation_with_excl
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_exists_aggregation(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -3574,6 +3905,11 @@ def test_searches_queries_abstract_query_factory_add_exists_aggregation(params_p
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_filters(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -3598,6 +3934,11 @@ def test_searches_queries_abstract_query_factory_add_filters(params_parser, mock
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_post_filters(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -3635,6 +3976,11 @@ def test_searches_queries_abstract_query_factory_add_post_filters(params_parser,
     assert all(e in actual_must_not for e in expected_must_not)
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_query_string_and_post_filters_wildcards(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
@@ -3693,6 +4039,11 @@ def test_searches_queries_abstract_query_factory_add_query_string_and_post_filte
     )
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_source(params_parser, mocker):
     from snosearch.queries import AbstractQueryFactory
     aq = AbstractQueryFactory(params_parser)
@@ -3705,6 +4056,11 @@ def test_searches_queries_abstract_query_factory_add_source(params_parser, mocke
     assert len(expected) == len(actual)
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_source_object(dummy_request):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.parsers import ParamsParser
@@ -3720,6 +4076,14 @@ def test_searches_queries_abstract_query_factory_add_source_object(dummy_request
     assert len(expected) == len(actual)
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_slice(params_parser, dummy_request, mocker):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.parsers import ParamsParser
@@ -3758,6 +4122,11 @@ def test_searches_queries_abstract_query_factory_add_slice(params_parser, dummy_
     assert aq.search.to_dict() == {'from': 0, 'size': 25, 'query': {'match_all': {}}}
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_subaggregation_factory(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     from elasticsearch_dsl.aggs import Filters, Terms, Stats
@@ -3772,6 +4141,11 @@ def test_searches_queries_abstract_query_factory_subaggregation_factory(params_p
     assert isinstance(sa, Stats)
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_add_aggregations_and_aggregation_filters(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     from pyramid.testing import DummyResource
@@ -3900,6 +4274,11 @@ def test_searches_queries_abstract_query_factory_add_aggregations_and_aggregatio
     assert actual['aggs']['Data Type']['aggs']['type']['terms']['exclude'] == ['Item']
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_search_query_factory_add_aggregations_and_aggregation_filters_special_facets(dummy_request):
     from snosearch.queries import BasicSearchQueryFactory
     from snosearch.parsers import ParamsParser
@@ -4048,6 +4427,11 @@ def test_searches_queries_abstract_query_factory_build_query():
         aq.build_query()
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_search_query_factory_init(params_parser):
     from snosearch.queries import BasicSearchQueryFactory
     bsqf = BasicSearchQueryFactory(params_parser)
@@ -4055,6 +4439,11 @@ def test_searches_queries_basic_search_query_factory_init(params_parser):
     assert bsqf.params_parser == params_parser
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_search_query_factory_build_query(dummy_request):
     from snosearch.queries import BasicSearchQueryFactory
     from snosearch.parsers import ParamsParser
@@ -4100,6 +4489,11 @@ def test_searches_queries_basic_search_query_factory_build_query(dummy_request):
     assert all(e in actual_must for e in expected_must)
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_search_query_factory_build_query_with_ranges(dummy_request):
     from snosearch.queries import BasicSearchQueryFactory
     from snosearch.parsers import ParamsParser
@@ -4173,6 +4567,11 @@ def test_searches_queries_basic_search_query_factory_build_query_with_ranges(dum
     assert all(e in actual_must_not for e in expected_must_not)
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_search_query_factory_with_facets_init(params_parser):
     from snosearch.queries import BasicSearchQueryFactoryWithFacets
     bsqf = BasicSearchQueryFactoryWithFacets(params_parser)
@@ -4180,6 +4579,11 @@ def test_searches_queries_basic_search_query_factory_with_facets_init(params_par
     assert bsqf.params_parser == params_parser
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_search_query_factory_with_facets_build_query(dummy_request):
     from snosearch.queries import BasicSearchQueryFactoryWithFacets
     from snosearch.parsers import ParamsParser
@@ -4377,12 +4781,22 @@ def test_searches_queries_basic_search_query_factory_with_facets_build_query(dum
     assert 'sort' in actual
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_search_query_factory_without_facets_init(params_parser):
     from snosearch.queries import BasicSearchQueryFactoryWithoutFacets
     bsqf = BasicSearchQueryFactoryWithoutFacets(params_parser)
     assert isinstance(bsqf, BasicSearchQueryFactoryWithoutFacets)
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_search_query_factory_without_facets_build_query(dummy_request):
     from snosearch.queries import BasicSearchQueryFactoryWithoutFacets
     from snosearch.parsers import ParamsParser
@@ -4402,12 +4816,22 @@ def test_searches_queries_basic_search_query_factory_without_facets_build_query(
     assert 'sort' in actual
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_cached_facet_query_factory_init(params_parser):
     from snosearch.queries import CachedFacetsQueryFactory
     cfqf = CachedFacetsQueryFactory(params_parser)
     assert isinstance(cfqf, CachedFacetsQueryFactory)
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_cached_facet_query_factory_build_query(dummy_request):
     from snosearch.queries import CachedFacetsQueryFactory
     from snosearch.parsers import ParamsParser
@@ -4428,6 +4852,11 @@ def test_searches_queries_cached_facet_query_factory_build_query(dummy_request):
     assert 'sort' not in actual
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_collection_search_query_factory_with_facets_get_item_types(params_parser):
     from snosearch.queries import CollectionSearchQueryFactoryWithFacets
     from snosearch.interfaces import TYPES
@@ -4439,6 +4868,12 @@ def test_searches_queries_collection_search_query_factory_with_facets_get_item_t
         ('type', 'TestingSearchSchema')
     ]
 
+
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_report_query_factory_init(params_parser):
     from snosearch.queries import BasicReportQueryFactory
     brqf = BasicReportQueryFactory(params_parser)
@@ -4446,6 +4881,11 @@ def test_searches_queries_basic_report_query_factory_init(params_parser):
     assert brqf.params_parser == params_parser
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_report_query_factory_with_facets_init(params_parser):
     from snosearch.queries import BasicReportQueryFactoryWithFacets
     brqf = BasicReportQueryFactoryWithFacets(params_parser)
@@ -4453,6 +4893,11 @@ def test_searches_queries_basic_report_query_factory_with_facets_init(params_par
     assert brqf.params_parser == params_parser
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_report_query_factory_without_facets_init(params_parser):
     from snosearch.queries import BasicReportQueryFactoryWithoutFacets
     brqf = BasicReportQueryFactoryWithoutFacets(params_parser)
@@ -4460,6 +4905,14 @@ def test_searches_queries_basic_report_query_factory_without_facets_init(params_
     assert brqf.params_parser == params_parser
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_basic_report_query_factory_with_facets_get_item_types(params_parser, dummy_request):
     from snosearch.queries import BasicReportQueryFactoryWithFacets
     from snosearch.parsers import ParamsParser
@@ -4487,6 +4940,11 @@ def test_searches_queries_basic_report_query_factory_with_facets_get_item_types(
         brqf._get_item_types()
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_report_query_factory_with_facets_validate_item_type_subtypes(dummy_request):
     from snosearch.queries import BasicReportQueryFactoryWithFacets
     from snosearch.parsers import ParamsParser
@@ -4508,6 +4966,11 @@ def test_searches_queries_basic_report_query_factory_with_facets_validate_item_t
         brqf.validate_item_type_subtypes()
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_report_query_factory_with_facets_add_slice(dummy_request):
     from snosearch.queries import BasicReportQueryFactoryWithFacets
     from snosearch.parsers import ParamsParser
@@ -4583,6 +5046,11 @@ def test_searches_queries_basic_report_query_factory_with_facets_add_slice(dummy
     assert q['size'] == 25
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_report_query_factory_with_facets_build_query(dummy_request):
     from snosearch.queries import BasicReportQueryFactoryWithFacets
     from snosearch.parsers import ParamsParser
@@ -4608,6 +5076,11 @@ def test_searches_queries_basic_report_query_factory_with_facets_build_query(dum
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_report_query_factory_without_facets_build_query(dummy_request):
     from snosearch.queries import BasicReportQueryFactoryWithoutFacets
     from snosearch.parsers import ParamsParser
@@ -4633,6 +5106,11 @@ def test_searches_queries_basic_report_query_factory_without_facets_build_query(
     ]
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_matrix_query_factory_with_facets_init(params_parser):
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     bmqf = BasicMatrixQueryFactoryWithFacets(params_parser)
@@ -4640,6 +5118,11 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_init(params_par
     assert bmqf.params_parser == params_parser
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_matrix_query_factory_with_facets_get_matrix_for_item_type(params_parser_snovault_types):
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     bmqf = BasicMatrixQueryFactoryWithFacets(params_parser_snovault_types)
@@ -4650,6 +5133,11 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_get_matrix_for_
     assert 'group_by' in matrix['y']
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_matrix_query_factory_with_facets_get_matrix_definition_name(params_parser_snovault_types):
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     bmqf = BasicMatrixQueryFactoryWithFacets(params_parser_snovault_types)
@@ -4661,6 +5149,11 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_get_matrix_defi
     assert bmqf._get_matrix_definition_name() == 'new_matrix'
 
 
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_matrix_query_factory_with_facets_get_matrix_for_item_type_with_no_matrix(params_parser_snovault_types):
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     from pyramid.exceptions import HTTPBadRequest
@@ -4669,6 +5162,14 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_get_matrix_for_
         bmqf._get_matrix_for_item_type('TestingPostPutPatch')
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_basic_matrix_query_factory_with_facets_get_item_types(params_parser, dummy_request):
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     from snosearch.parsers import ParamsParser
@@ -4696,6 +5197,11 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_get_item_types(
         bmqf._get_item_types()
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_matrix_query_factory_with_facets_get_group_by_fields_by_item_type_and_value(params_parser):
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     from pyramid.exceptions import HTTPBadRequest
@@ -4707,6 +5213,14 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_get_group_by_fi
         bmqf._get_group_by_fields_by_item_type_and_value('TestingPostPutPatch', 'y') == []
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_basic_matrix_query_factory_with_facets_get_x_group_by_fields(params_parser, dummy_request):
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     dummy_request.environ['QUERY_STRING'] = (
@@ -4717,6 +5231,14 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_get_x_group_by_
     assert bmqf._get_x_group_by_fields() == ['label']
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_basic_matrix_query_factory_with_facets_get_y_group_by_fields(params_parser, dummy_request):
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     dummy_request.environ['QUERY_STRING'] = (
@@ -4728,6 +5250,14 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_get_y_group_by_
     assert bmqf._get_y_group_by_fields() == ['status', 'name']
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_basic_matrix_query_factory_with_facets_make_list_of_name_and_subagg_tuples(params_parser, dummy_request):
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     from elasticsearch_dsl.aggs import Terms
@@ -4749,6 +5279,11 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_make_list_of_na
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_basic_matrix_query_factory_with_facets_make_subaggregation_from_names(params_parser):
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     bmqf = BasicMatrixQueryFactoryWithFacets(params_parser)
@@ -4792,6 +5327,14 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_make_subaggrega
     assert subagg is None
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_basic_matrix_query_factory_with_facets_get_group_by_names(params_parser, dummy_request):
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     dummy_request.environ['QUERY_STRING'] = (
@@ -4803,6 +5346,14 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_get_group_by_na
     assert group_by_names == [('x', ['label']), ('y', ['status', 'name', 'label'])]
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_basic_matrix_query_factory_with_facets_add_matrix_aggregations(params_parser, dummy_request):
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
     dummy_request.environ['QUERY_STRING'] = (
@@ -4908,6 +5459,14 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_add_matrix_aggr
     assert len(actual['aggs']['x']['filter']['bool']['must']) == 2
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_basic_matrix_query_factory_with_facets_build_query(params_parser, dummy_request):
     from pyramid.testing import DummyResource
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
@@ -5116,6 +5675,11 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_build_query(par
     assert actual['size'] == 0
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_missing_matrix_query_factory_with_facets_init(params_parser):
     from snosearch.queries import MissingMatrixQueryFactoryWithFacets
     mmqf = MissingMatrixQueryFactoryWithFacets(params_parser)
@@ -5123,6 +5687,14 @@ def test_searches_queries_missing_matrix_query_factory_with_facets_init(params_p
     assert mmqf.params_parser == params_parser
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_missing_matrix_query_factory_with_facets_parse_name_and_default_value_from_name(params_parser, dummy_request):
     from snosearch.queries import MissingMatrixQueryFactoryWithFacets
     from elasticsearch_dsl.aggs import Terms
@@ -5139,6 +5711,14 @@ def test_searches_queries_missing_matrix_query_factory_with_facets_parse_name_an
     assert default_value == 'no_target'
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_missing_matrix_query_factory_with_facets_make_subaggregation_with_possible_default_value_from_name(params_parser, dummy_request):
     from snosearch.queries import MissingMatrixQueryFactoryWithFacets
     from elasticsearch_dsl.aggs import Terms
@@ -5200,6 +5780,14 @@ def test_searches_queries_missing_matrix_query_factory_with_facets_make_list_of_
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_missing_matrix_query_factory_with_facets_add_matrix_aggregations(params_parser, dummy_request):
     from snosearch.queries import MissingMatrixQueryFactoryWithFacets
     dummy_request.environ['QUERY_STRING'] = (
@@ -5308,6 +5896,14 @@ def test_searches_queries_missing_matrix_query_factory_with_facets_add_matrix_ag
     assert 'missing' not in actual['aggs']['y']['aggs']['status']['aggs']['name']['aggs']['label']['terms']
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_missing_matrix_query_factory_with_facets_add_matrix_aggregations_with_default_value(params_parser, dummy_request):
     from snosearch.queries import MissingMatrixQueryFactoryWithFacets
     dummy_request.environ['QUERY_STRING'] = (
@@ -5419,6 +6015,11 @@ def test_searches_queries_missing_matrix_query_factory_with_facets_add_matrix_ag
     assert 'missing' not in actual['aggs']['y']['aggs']['status']['aggs']['name']['aggs']['label']['terms']
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_audit_matrix_query_factory_with_facets_init(params_parser):
     from snosearch.queries import AuditMatrixQueryFactoryWithFacets
     amqf = AuditMatrixQueryFactoryWithFacets(params_parser)
@@ -5426,6 +6027,11 @@ def test_searches_queries_audit_matrix_query_factory_with_facets_init(params_par
     assert amqf.params_parser == params_parser
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_audit_matrix_query_factory_with_facets_get_matrix_for_item_type(params_parser):
     from snosearch.queries import AuditMatrixQueryFactoryWithFacets
     amqf = AuditMatrixQueryFactoryWithFacets(params_parser)
@@ -5451,6 +6057,14 @@ def test_searches_queries_audit_matrix_query_factory_with_facets_get_matrix_for_
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_audit_matrix_query_factory_with_facets_get_group_by_names(params_parser, dummy_request):
     from snosearch.queries import AuditMatrixQueryFactoryWithFacets
     dummy_request.environ['QUERY_STRING'] = (
@@ -5470,6 +6084,11 @@ def test_searches_queries_audit_matrix_query_factory_with_facets_get_group_by_na
     assert all(e in actual for e in expected)    
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_top_hits_query_factory_init(params_parser):
     from snosearch.queries import TopHitsQueryFactory
     thqf = TopHitsQueryFactory(params_parser)
@@ -5477,6 +6096,11 @@ def test_searches_queries_top_hits_query_factory_init(params_parser):
     assert thqf.params_parser == params_parser
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_top_hits_query_factory_build_query(dummy_request):
     from snosearch.queries import TopHitsQueryFactory
     from snosearch.parsers import ParamsParser
@@ -5555,6 +6179,11 @@ def test_searches_queries_top_hits_query_factory_build_query(dummy_request):
     assert expected['aggs'] == actual['aggs']
 
 
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_top_hits_query_factory_build_query_with_filter(dummy_request):
     from snosearch.queries import TopHitsQueryFactory
     from snosearch.parsers import ParamsParser
@@ -5643,6 +6272,11 @@ def test_searches_queries_top_hits_query_factory_build_query_with_filter(dummy_r
     )
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_top_hits_query_factory_make_max_aggregation(params_parser):
     from snosearch.queries import TopHitsQueryFactory
     th = TopHitsQueryFactory(params_parser)
@@ -5656,6 +6290,11 @@ def test_searches_queries_top_hits_query_factory_make_max_aggregation(params_par
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_top_hits_query_factory_make_top_hits_aggregation(params_parser):
     from snosearch.queries import TopHitsQueryFactory
     th = TopHitsQueryFactory(params_parser)
@@ -5671,6 +6310,11 @@ def test_searches_queries_top_hits_query_factory_make_top_hits_aggregation(param
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_top_hits_query_factory_make_top_hits_by_type_aggregation(params_parser):
     from snosearch.queries import TopHitsQueryFactory
     th = TopHitsQueryFactory(params_parser)
@@ -5703,6 +6347,14 @@ def test_searches_queries_top_hits_query_factory_make_top_hits_by_type_aggregati
     }
 
 
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
 def test_searches_queries_top_hits_query_factory_add_filtered_top_hits_aggregation(params_parser, dummy_request):
     from snosearch.queries import TopHitsQueryFactory
     dummy_request.environ['QUERY_STRING'] = (
