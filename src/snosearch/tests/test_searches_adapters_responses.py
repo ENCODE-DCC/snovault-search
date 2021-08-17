@@ -15,10 +15,6 @@ def test_adapters_responses_get_response_get_response():
     rf = ResponseFactory('flask')
     assert isinstance(
         rf._get_response_by_name(),
-        FlaskResponseAdapter
-    )
-    assert isinstance(
-        rf._get_response_by_name()._response,
         FlaskResponse
     )
     rf = ResponseFactory()
@@ -50,7 +46,7 @@ def test_adapters_responses_get_response_get_response():
 def test_adapters_responses_flask_response_adapter_methods():
     from flask import Response
     from snosearch.adapters.flask.responses import ResponseAdapter
-    r = ResponseAdapter(Response())
+    r = ResponseAdapter()
     assert r.status_code == 200
     r.status_code = 404
     assert r.status_code == 404

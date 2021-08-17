@@ -1,29 +1,14 @@
-class ResponseAdapter:
+try:
+    from flask import Response
+except ModuleNotFoundError:
+    Response = object
 
-    def __init__(self, response):
-        # Avoid calling setattr.
-        self.__dict__['_response'] = response
 
-    # Emulates inheritance without requiring
-    # concrete base class.
-    def __getattr__(self, attr):
-        return getattr(self._response, attr)
-
-    def __setattr__(self, attr, value):
-        # Use local properties if exist.
-        if attr in ResponseAdapter.__dict__:
-            return super().__setattr__(attr, value)
-        else:
-            # Delegate to response object.
-            return setattr(self._response, attr, value)
-
-    @property
-    def __class__(self):
-        return self.__dict__['_response'].__class__
+class ResponseAdapter(Response):
 
     @property
     def status_code(self):
-        return self._response.status_code
+        return super().status_code
 
     @status_code.setter
     def status_code(self, code):
