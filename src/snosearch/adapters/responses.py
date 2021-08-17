@@ -1,4 +1,3 @@
-
 class ResponseFactory():
     def __init__(self, name=None):
         self.name = name
@@ -9,7 +8,8 @@ class ResponseFactory():
 
     def _get_response_from_flask(self):
         from flask import Response
-        return Response()
+        from snosearch.adapters.flask.responses import ResponseAdapter
+        return ResponseAdapter(Response())
 
     def _maybe_get_response_from_pyramid(self):
         try:

@@ -6,6 +6,7 @@ def test_adapters_responses_get_response_get_response():
     from snosearch.adapters.responses import get_response
     from pyramid.response import Response as PyramidResponse
     from flask import Response as FlaskResponse
+    from snosearch.adapters.flask.responses import ResponseAdapter as FlaskResponseAdapter
     rf = ResponseFactory('pyramid')
     assert isinstance(
         rf._get_response_by_name(),
@@ -14,6 +15,10 @@ def test_adapters_responses_get_response_get_response():
     rf = ResponseFactory('flask')
     assert isinstance(
         rf._get_response_by_name(),
+        FlaskResponseAdapter
+    )
+    assert isinstance(
+        rf._get_response_by_name()._response,
         FlaskResponse
     )
     rf = ResponseFactory()
@@ -27,7 +32,7 @@ def test_adapters_responses_get_response_get_response():
     rf._get_response_from_pyramid = lambda: raise_error()
     assert isinstance(
         rf._get_response(),
-        FlaskResponse
+        FlaskResponseAdapter
     )
     rf = ResponseFactory()
     rf._get_response_from_flask = lambda: raise_error()
@@ -40,3 +45,20 @@ def test_adapters_responses_get_response_get_response():
         get_response(),
         PyramidResponse
     )
+
+
+def test_adapters_responses_flask_response_adapter_methods():
+    from flask import Response
+    from snosearch.adapters.flask.responses import ResponseAdapter
+    r = ResponseAdapter(Response())
+    assert r.status_code == 200
+    r.status_code = 404
+    assert r.status_code == 404
+    r.status_code = 200
+    assert r.status == '200 OK'
+    r.registry = {'a': 'b'}
+    assert r.registry == {'a': 'b'}
+    assert r.app_iter is None
+    r.app_iter = (x for x in ['a', 'b', 'c'])
+    assert r.content_type == 'text/html; charset=utf-8'
+    assert r.data == b'abc'
