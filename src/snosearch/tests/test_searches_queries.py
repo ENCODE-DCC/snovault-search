@@ -10,10 +10,8 @@ integrations = [
 @pytest.fixture
 def params_parser(request, pyramid_dummy_request, flask_dummy_request):
     if hasattr(request, 'param') and request.param == 'flask':
-        print('setting flask req')
         dummy_request = flask_dummy_request
     else:
-        print('setting pyramid req')
         dummy_request = pyramid_dummy_request
     from snosearch.parsers import ParamsParser
     from snosearch.interfaces import ELASTIC_SEARCH
@@ -33,10 +31,8 @@ def params_parser(request, pyramid_dummy_request, flask_dummy_request):
 @pytest.fixture
 def params_parser_snovault_types(request, pyramid_dummy_request, flask_dummy_request):
     if hasattr(request, 'param') and request.param == 'flask':
-        print('setting flask req')
         dummy_request = flask_dummy_request
     else:
-        print('setting pyramid req')
         dummy_requuest = pyramid_dummy_request
     dummy_request = flask_dummy_request
     from snosearch.parsers import ParamsParser
