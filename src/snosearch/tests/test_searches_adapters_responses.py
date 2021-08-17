@@ -62,3 +62,4 @@ def test_adapters_responses_flask_response_adapter_methods():
     r.app_iter = (x for x in ['a', 'b', 'c'])
     assert r.content_type == 'text/html; charset=utf-8'
     assert r.data == b'abc'
+    assert isinstance(r, Response)

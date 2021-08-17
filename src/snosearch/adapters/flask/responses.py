@@ -18,6 +18,10 @@ class ResponseAdapter:
             return setattr(self._response, attr, value)
 
     @property
+    def __class__(self):
+        return self.__dict__['_response'].__class__
+
+    @property
     def status_code(self):
         return self._response.status_code
 
