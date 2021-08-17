@@ -1,11 +1,85 @@
 import pytest
 
-from pyramid.httpexceptions import HTTPBadRequest
-
 
 def test_searches_decorators_assert_condition_returned():
+    from pyramid.httpexceptions import HTTPBadRequest
     from snosearch.decorators import assert_condition_returned
     @assert_condition_returned(condition=lambda x: any(n > 1 for n in x), error_message='Invalid value:')
+    def dummy_func(values):
+        return values
+    assert dummy_func([0, -1, 0, -25]) == [0, -1, 0, -25]
+    assert dummy_func([0, 1, 0, -25]) == [0, 1, 0, -25]
+    with pytest.raises(HTTPBadRequest) as e:
+        dummy_func([0, 2, 0, -25])
+    assert str(e.value) == 'Invalid value: [0, 2, 0, -25]'
+    assert e.typename == 'HTTPBadRequest'
+    from snosearch.adapters.exceptions import get_default_exception
+    from werkzeug.exceptions import BadRequest
+    @assert_condition_returned(
+        condition=lambda x: any(n > 1 for n in x),
+        error_message='Invalid value:',
+        exception=get_default_exception('flask'),
+    )
+    def dummy_func(values):
+        return values
+    assert dummy_func([0, -1, 0, -25]) == [0, -1, 0, -25]
+    assert dummy_func([0, 1, 0, -25]) == [0, 1, 0, -25]
+    with pytest.raises(BadRequest) as e:
+        dummy_func([0, 2, 0, -25])
+    assert str(e.value) == '400 Bad Request: Invalid value: [0, 2, 0, -25]'
+    assert e.typename == 'BadRequest'
+    @assert_condition_returned(
+        condition=lambda x: any(n > 1 for n in x),
+        error_message='Invalid value:',
+        exception=get_default_exception('pyramid'),
+    )
+    def dummy_func(values):
+        return values
+    assert dummy_func([0, -1, 0, -25]) == [0, -1, 0, -25]
+    assert dummy_func([0, 1, 0, -25]) == [0, 1, 0, -25]
+    with pytest.raises(HTTPBadRequest) as e:
+        dummy_func([0, 2, 0, -25])
+    assert str(e.value) == 'Invalid value: [0, 2, 0, -25]'
+    assert e.typename == 'HTTPBadRequest'
+    from snosearch.adapters.exceptions import BadRequestFactory
+    brf = BadRequestFactory()
+    @assert_condition_returned(
+        condition=lambda x: any(n > 1 for n in x),
+        error_message='Invalid value:',
+        exception=brf._maybe_get_exception_from_flask()
+    )
+    def dummy_func(values):
+        return values
+    assert dummy_func([0, -1, 0, -25]) == [0, -1, 0, -25]
+    assert dummy_func([0, 1, 0, -25]) == [0, 1, 0, -25]
+    with pytest.raises(BadRequest) as e:
+        dummy_func([0, 2, 0, -25])
+    assert str(e.value) == '400 Bad Request: Invalid value: [0, 2, 0, -25]'
+    assert e.typename == 'BadRequest'
+    def raise_error():
+        raise ModuleNotFoundError
+    old = brf._get_exception_from_pyramid
+    brf._get_exception_from_pyramid = lambda: raise_error()
+    @assert_condition_returned(
+        condition=lambda x: any(n > 1 for n in x),
+        error_message='Invalid value:',
+        exception=brf._get_bad_request()
+    )
+    def dummy_func(values):
+        return values
+    assert dummy_func([0, -1, 0, -25]) == [0, -1, 0, -25]
+    assert dummy_func([0, 1, 0, -25]) == [0, 1, 0, -25]
+    with pytest.raises(BadRequest) as e:
+        dummy_func([0, 2, 0, -25])
+    assert str(e.value) == '400 Bad Request: Invalid value: [0, 2, 0, -25]'
+    assert e.typename == 'BadRequest'
+    brf._get_exception_from_pyramid = old
+    brf._get_exception_from_flask = lambda: raise_error()
+    @assert_condition_returned(
+        condition=lambda x: any(n > 1 for n in x),
+        error_message='Invalid value:',
+        exception=brf._maybe_get_exception_from_flask() or brf._get_bad_request()
+    )
     def dummy_func(values):
         return values
     assert dummy_func([0, -1, 0, -25]) == [0, -1, 0, -25]
@@ -17,6 +91,7 @@ def test_searches_decorators_assert_condition_returned():
 
 
 def test_searches_decorators_assert_none_returned():
+    from pyramid.httpexceptions import HTTPBadRequest
     from snosearch.decorators import assert_none_returned
     @assert_none_returned(error_message='Invalid type')
     def dummy_func(values):
@@ -29,6 +104,7 @@ def test_searches_decorators_assert_none_returned():
 
 
 def test_searches_decorators_assert_one_or_none_returned():
+    from pyramid.httpexceptions import HTTPBadRequest
     from snosearch.decorators import assert_one_or_none_returned
     @assert_one_or_none_returned(error_message='Multiple values invalid')
     def dummy_func(values):
@@ -44,6 +120,7 @@ def test_searches_decorators_assert_one_or_none_returned():
 
 
 def test_searches_decorators_assert_one_returned():
+    from pyramid.httpexceptions import HTTPBadRequest
     from snosearch.decorators import assert_one_returned
     @assert_one_returned(error_message='Need one value')
     def dummy_func(values):
@@ -60,6 +137,7 @@ def test_searches_decorators_assert_one_returned():
 
 
 def test_searches_decorators_assert_something_returned():
+    from pyramid.httpexceptions import HTTPBadRequest
     from snosearch.decorators import assert_something_returned
     @assert_something_returned(error_message='Nothing returnedd')
     def dummy_func(values):
