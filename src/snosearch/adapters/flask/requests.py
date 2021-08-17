@@ -42,3 +42,11 @@ class RequestAdapter:
 
     def route_path(self, context):
         raise NotImplementedError
+
+    @property
+    def path_qs(self):
+        return self._request.full_path
+
+    @property
+    def path(self):
+        return self._request.path

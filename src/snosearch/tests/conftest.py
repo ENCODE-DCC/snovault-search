@@ -35,6 +35,7 @@ def pyramid_dummy_request(dummy_registry):
 def flask_dummy_request(dummy_registry):
     from snosearch.tests.dummy_requests import FlaskDummyRequestAdapter
     from flask import Request
+    from flask import Response
     dummy_request = FlaskDummyRequestAdapter(
         Request(
             {
@@ -43,6 +44,7 @@ def flask_dummy_request(dummy_registry):
         )
     )
     dummy_request.registry = dummy_registry
+    dummy_request.response = Response()
     return dummy_request
 
 
