@@ -1,7 +1,4 @@
-try:
-    from flask import Response
-except ModuleNotFoundError:
-    Response = object
+from flask import Response
 
 
 class ResponseAdapter(Response):
