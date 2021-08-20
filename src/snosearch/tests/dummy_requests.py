@@ -20,14 +20,6 @@ class FlaskDummyRequestAdapter(RequestAdapter):
         return self
 
     @property
-    def query_string(self):
-        return self._request.query_string.decode('utf-8')
-
-    @query_string.setter
-    def query_string(self, value):
-        self.__setitem__('QUERY_STRING', value)
-
-    @property
     def effective_principals(self):
         if self._request.environ.get('REMOTE_USER') == 'TEST_SUBMITTER':
             return ['group.submitter']

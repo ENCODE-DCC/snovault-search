@@ -26,10 +26,10 @@ class RequestAdapter:
             self._request.args
         )
 
-    def copy(self):
+    def copy(self, environ=None):
         return RequestAdapter(
             self._request.__class__(
-                self._request.environ.copy()
+                environ or self._request.environ.copy()
             )
         )
 
@@ -50,3 +50,19 @@ class RequestAdapter:
     @property
     def path(self):
         return self._request.path
+
+    @property
+    def query_string(self):
+        return self._request.query_string.decode('utf-8')
+
+    @query_string.setter
+    def query_string(self, query_string):
+        environ = self._request.environ.copy()
+        environ.update(
+            {
+                'QUERY_STRING': query_string,
+            }
+        )
+        self._request = self.copy(
+            environ=environ
+        )._request
