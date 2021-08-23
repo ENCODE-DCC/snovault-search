@@ -1,8 +1,18 @@
 import pytest
 
 
+integrations = [
+    'pyramid',
+    'flask',
+]
+
+
 @pytest.fixture()
-def dummy_parent(dummy_request):
+def dummy_parent(request, pyramid_dummy_request, flask_dummy_request):
+    if hasattr(request, 'param') and request.param == 'flask':
+        dummy_request = flask_dummy_request
+    else:
+        dummy_request = pyramid_dummy_request
     from pyramid.testing import DummyResource
     from pyramid.security import Allow
     from snosearch.parsers import ParamsParser
@@ -31,6 +41,11 @@ def test_searches_fields_response_field_init():
     assert isinstance(rf, ResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_response_field_get_params_parser(dummy_parent):
     from snosearch.fields import ResponseField
     from snosearch.parsers import ParamsParser
@@ -39,14 +54,28 @@ def test_searches_fields_response_field_get_params_parser(dummy_parent):
     assert isinstance(rf.get_params_parser(), ParamsParser)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_response_field_get_request(dummy_parent):
     from snosearch.fields import ResponseField
-    from pyramid.request import Request
+    from pyramid.request import Request as PyramidRequest
+    from .dummy_requests import FlaskDummyRequestAdapter as FlaskRequest
     rf = ResponseField()
     rf.parent = dummy_parent
-    assert isinstance(rf.get_request(), Request)
+    assert (
+        isinstance(rf.get_request(), PyramidRequest)
+        or isinstance(rf.get_request(), FlaskRequest)
+    )
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_response_field_render(dummy_parent):
     from snosearch.fields import ResponseField
     rf = ResponseField()
@@ -60,6 +89,11 @@ def test_searches_fields_basic_search_response_field_init():
     assert isinstance(brf, BasicSearchResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_search_response_build_query(dummy_parent):
     from snosearch.fields import BasicSearchResponseField
     from elasticsearch_dsl import Search
@@ -69,6 +103,11 @@ def test_searches_fields_basic_search_response_build_query(dummy_parent):
     assert isinstance(brf.query, Search)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_search_response_register_query(dummy_parent):
     from snosearch.fields import BasicSearchResponseField
     from snosearch.queries import BasicSearchQueryFactory
@@ -80,6 +119,11 @@ def test_searches_fields_basic_search_response_register_query(dummy_parent):
     assert isinstance(brf.get_query_builder(), BasicSearchQueryFactory)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_search_response_execute_query(dummy_parent, mocker):
     from elasticsearch_dsl import Search
     mocker.patch.object(Search, 'execute')
@@ -92,6 +136,11 @@ def test_searches_fields_basic_search_response_execute_query(dummy_parent, mocke
     assert Search.execute.call_count == 1
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_search_response_format_results(dummy_parent, mocker):
     from elasticsearch_dsl import Search
     mocker.patch.object(Search, 'execute')
@@ -108,6 +157,11 @@ def test_searches_fields_basic_search_response_format_results(dummy_parent, mock
     assert list(brf.response['@graph']) == []
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_search_response_render(dummy_parent, mocker):
     from elasticsearch_dsl import Search
     mocker.patch.object(Search, 'execute')
@@ -128,6 +182,11 @@ def test_searches_fields_basic_search_with_facets_response_field_init():
     assert isinstance(brf, BasicSearchWithFacetsResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_search_with_facets_response_build_query(dummy_parent):
     from snosearch.fields import BasicSearchWithFacetsResponseField
     from elasticsearch_dsl import Search
@@ -137,6 +196,11 @@ def test_searches_fields_basic_search_with_facets_response_build_query(dummy_par
     assert isinstance(brf.query, Search)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_search_with_facets_response_register_query(dummy_parent):
     from snosearch.fields import BasicSearchWithFacetsResponseField
     from snosearch.queries import BasicSearchQueryFactoryWithFacets
@@ -148,6 +212,11 @@ def test_searches_fields_basic_search_with_facets_response_register_query(dummy_
     assert isinstance(brf.get_query_builder(), BasicSearchQueryFactoryWithFacets)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_search_with_facets_response_execute_query(dummy_parent, mocker):
     from elasticsearch_dsl import Search
     mocker.patch.object(Search, 'execute')
@@ -160,6 +229,11 @@ def test_searches_fields_basic_search_with_facets_response_execute_query(dummy_p
     assert Search.execute.call_count == 1
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_search_with_facets_response_format_results(dummy_parent, mocker):
     from elasticsearch_dsl import Search
     mocker.patch.object(Search, 'execute')
@@ -185,6 +259,11 @@ def test_searches_fields_basic_search_without_facets_response_field_init():
     assert isinstance(brf, BasicSearchWithoutFacetsResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_search_without_facets_response_build_query(dummy_parent):
     from snosearch.fields import BasicSearchWithoutFacetsResponseField
     from elasticsearch_dsl import Search
@@ -200,6 +279,11 @@ def test_searches_fields_cached_facets_response_field_init():
     assert isinstance(cfrf, CachedFacetsResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_cached_facets_response_field_build_query(dummy_parent):
     from snosearch.fields import CachedFacetsResponseField
     from elasticsearch_dsl import Search
@@ -215,6 +299,11 @@ def test_searches_fields_collection_search_with_facets_response_field_init():
     assert isinstance(crf, CollectionSearchWithFacetsResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_collection_search_with_facets_response_build_query(dummy_parent):
     from snosearch.fields import CollectionSearchWithFacetsResponseField
     from snosearch.fields import CollectionSearchQueryFactoryWithFacets
@@ -228,6 +317,11 @@ def test_searches_fields_collection_search_with_facets_response_build_query(dumm
     assert isinstance(crf.query_builder, CollectionSearchQueryFactoryWithFacets)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_report_with_facets_response_build_query(dummy_parent):
     from snosearch.fields import BasicReportWithFacetsResponseField
     from snosearch.queries import BasicReportQueryFactoryWithFacets
@@ -243,6 +337,11 @@ def test_searches_fields_basic_report_with_facets_response_build_query(dummy_par
     assert isinstance(brf.query_builder, BasicReportQueryFactoryWithFacets)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_report_without_facets_response_build_query(dummy_parent):
     from snosearch.fields import BasicReportWithoutFacetsResponseField
     from snosearch.queries import BasicReportQueryFactoryWithoutFacets
@@ -264,6 +363,11 @@ def test_searches_fields_raw_search_with_aggs_response_field_init():
     assert isinstance(rs, RawSearchWithAggsResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_raw_search_with_aggs_response_field_maybe_scan_over_results(dummy_parent, mocker):
     from snosearch.fields import BasicSearchQueryFactoryWithFacets
     from snosearch.fields import RawSearchWithAggsResponseField
@@ -314,6 +418,11 @@ def test_searches_fields_context_response_field(dummy_parent):
     assert cr.render(parent=dummy_parent) == {'@context': '/terms/'}
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_id_response_field(dummy_parent):
     from snosearch.fields import IDResponseField
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
@@ -326,12 +435,22 @@ def test_searches_fields_id_response_field(dummy_parent):
     }
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_all_response_field_init(dummy_parent):
     from snosearch.fields import AllResponseField
     ar = AllResponseField()
     assert isinstance(ar, AllResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_all_response_field_get_limit(dummy_parent):
     from snosearch.fields import AllResponseField
     ar = AllResponseField()
@@ -343,6 +462,11 @@ def test_searches_fields_all_response_field_get_limit(dummy_parent):
     assert ar._get_limit() == [('limit', '99')]
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_all_response_field_get_qs_with_limit_all(dummy_parent):
     from snosearch.fields import AllResponseField
     ar = AllResponseField()
@@ -356,6 +480,11 @@ def test_searches_fields_all_response_field_get_qs_with_limit_all(dummy_parent):
     )
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_all_response_field_maybe_add_all(dummy_parent):
     from snosearch.fields import AllResponseField
     ar = AllResponseField()
@@ -397,12 +526,22 @@ def test_searches_fields_all_response_field_maybe_add_all(dummy_parent):
     assert 'all' not in ar.response
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_notification_response_field_init(dummy_parent):
     from snosearch.fields import NotificationResponseField
     nr = NotificationResponseField()
     assert isinstance(nr, NotificationResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_notification_response_field_results_found(dummy_parent):
     from snosearch.fields import NotificationResponseField
     nr = NotificationResponseField()
@@ -414,6 +553,11 @@ def test_searches_fields_notification_response_field_results_found(dummy_parent)
     assert nr._results_found()
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_notification_response_field_set_notification(dummy_parent):
     from snosearch.fields import NotificationResponseField
     nr = NotificationResponseField()
@@ -423,6 +567,11 @@ def test_searches_fields_notification_response_field_set_notification(dummy_pare
     assert nr.response['notification'] == 'lots of results'
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_notification_response_field_set_status_code(dummy_parent):
     from snosearch.fields import NotificationResponseField
     nr = NotificationResponseField()
@@ -432,6 +581,11 @@ def test_searches_fields_notification_response_field_set_status_code(dummy_paren
     assert nr.parent._meta['params_parser']._request.response.status_code == 404
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_notification_response_field_render(dummy_parent):
     from snosearch.fields import NotificationResponseField
     nr = NotificationResponseField()
@@ -444,12 +598,22 @@ def test_searches_fields_notification_response_field_render(dummy_parent):
     assert dummy_parent.response == {}
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_filters_response_field_init(dummy_parent):
     from snosearch.fields import FiltersResponseField
     frf = FiltersResponseField()
     assert isinstance(frf, FiltersResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_filters_response_field_get_filters_and_search_terms_from_query_string(dummy_parent):
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
@@ -470,6 +634,11 @@ def test_searches_fields_filters_response_field_get_filters_and_search_terms_fro
     assert all([e in actual for e in expected])
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_filters_response_field_get_path_qs_without_filter(dummy_parent):
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
@@ -496,6 +665,11 @@ def test_searches_fields_filters_response_field_get_path_qs_without_filter(dummy
     )
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_filters_response_field_get_path_qs_without_filter_malformed_query(dummy_parent):
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
@@ -518,6 +692,11 @@ def test_searches_fields_filters_response_field_get_path_qs_without_filter_malfo
     )
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_filters_response_field_make_filter(dummy_parent):
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
@@ -534,6 +713,11 @@ def test_searches_fields_filters_response_field_make_filter(dummy_parent):
     }
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_filters_response_field_make_filters(dummy_parent):
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
@@ -575,6 +759,11 @@ def test_searches_fields_filters_response_field_make_filters(dummy_parent):
     assert all([e in actual for e in expected])
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_clear_filter_response_field_get_search_term_or_types_from_query_string(dummy_parent):
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
@@ -593,6 +782,11 @@ def test_searches_fields_clear_filter_response_field_get_search_term_or_types_fr
     assert search_term_or_types == [('type', 'Experiment')]
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_type_only_clear_filter_response_field_get_search_term_or_types_from_query_string(dummy_parent):
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
@@ -612,6 +806,11 @@ def test_searches_fields_type_only_clear_filter_response_field_get_search_term_o
     assert search_term_or_types == [('type', 'Experiment')]
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_clear_filter_response_field_get_path_qs_with_no_filters(dummy_parent):
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
@@ -624,6 +823,11 @@ def test_searches_fields_clear_filter_response_field_get_path_qs_with_no_filters
     assert path == '/dummy?searchTerm=ctcf'
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_clear_filter_response_field_add_clear_filters(dummy_parent):
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=Experiment&assay_title=Histone+ChIP-seq&award.project=Roadmap'
@@ -636,6 +840,11 @@ def test_searches_fields_clear_filter_response_field_add_clear_filters(dummy_par
     assert cfr.response['clear_filters'] == '/dummy?type=Experiment'
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_collection_clear_filter_response_field_get_search_term_or_types_from_query_string(dummy_parent):
     from snosearch.queries import CollectionSearchQueryFactoryWithFacets
     from snosearch.fields import CollectionClearFiltersResponseField
@@ -649,6 +858,11 @@ def test_searches_fields_collection_clear_filter_response_field_get_search_term_
     ]
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_collection_clear_filter_response_field_get_path_qs_with_no_filters(dummy_parent):
     from snosearch.queries import CollectionSearchQueryFactoryWithFacets
     from snosearch.fields import CollectionClearFiltersResponseField
@@ -660,6 +874,11 @@ def test_searches_fields_collection_clear_filter_response_field_get_path_qs_with
     assert ccfr._get_path_qs_with_no_filters() == '/search/?type=TestingSearchSchema'
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_debug_query_response_field(dummy_parent, mocker):
     from snosearch.queries import AbstractQueryFactory
     mocker.patch.object(AbstractQueryFactory, '_get_index')
@@ -676,6 +895,11 @@ def test_searches_fields_debug_query_response_field(dummy_parent, mocker):
     assert 'post_filter' in r['debug']['raw_query']
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_column_response_field(dummy_parent):
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema'
@@ -690,6 +914,11 @@ def test_searches_fields_column_response_field(dummy_parent):
     }
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_sort_response_field_remove_prefix(dummy_parent):
     from snosearch.fields import SortResponseField
     srf = SortResponseField()
@@ -697,6 +926,11 @@ def test_searches_fields_sort_response_field_remove_prefix(dummy_parent):
     assert rp == {'x': {'order': 'desc'}, 'y': {'order': 'asc'}}
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_sort_response_field_maybe_add_sort(dummy_parent):
     from snosearch.fields import SortResponseField
     from elasticsearch_dsl import Search
@@ -716,6 +950,11 @@ def test_searches_fields_raw_matrix_with_aggs_response_field_init():
     assert isinstance(rm, RawMatrixWithAggsResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_raw_matrix_with_aggs_response_field_build_query(dummy_parent):
     from snosearch.fields import RawMatrixWithAggsResponseField
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
@@ -736,6 +975,11 @@ def test_searches_fields_raw_top_hits_response_field_init():
     assert isinstance(rth, RawTopHitsResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_raw_top_hits_response_field_build_query(dummy_parent):
     from snosearch.fields import RawTopHitsResponseField
     from snosearch.queries import TopHitsQueryFactory
@@ -756,6 +1000,11 @@ def test_searches_fields_basic_matrix_with_facets_response_field_init():
     assert isinstance(bmwf, BasicMatrixWithFacetsResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_matrix_with_facets_response_field_build_query(dummy_parent):
     from snosearch.fields import BasicMatrixWithFacetsResponseField
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
@@ -770,6 +1019,11 @@ def test_searches_fields_basic_matrix_with_facets_response_field_build_query(dum
     assert isinstance(bmwf.query_builder, BasicMatrixQueryFactoryWithFacets)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_basic_matrix_with_facets_response_field_execute_query(dummy_parent, mocker):
     from snosearch.fields import BasicMatrixWithFacetsResponseField
     from elasticsearch_dsl import Search
@@ -790,6 +1044,11 @@ def test_searches_fields_missing_matrix_with_facets_response_field_init():
     assert isinstance(mmwf, MissingMatrixWithFacetsResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_missing_matrix_with_facets_response_field_build_query(dummy_parent):
     from snosearch.fields import MissingMatrixWithFacetsResponseField
     from snosearch.queries import MissingMatrixQueryFactoryWithFacets
@@ -804,6 +1063,11 @@ def test_searches_fields_missing_matrix_with_facets_response_field_build_query(d
     assert isinstance(mmwf.query_builder, MissingMatrixQueryFactoryWithFacets)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_search_base_get_search_base(dummy_parent):
     from snosearch.fields import SearchBaseResponseField
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
@@ -826,6 +1090,11 @@ def test_searches_fields_search_base_get_search_base(dummy_parent):
     assert sb._get_search_base() == '/different-search/'
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_search_base_render(dummy_parent):
     from snosearch.fields import SearchBaseResponseField
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
@@ -843,6 +1112,11 @@ def test_searches_fields_audit_matrix_with_facets_response_field_init():
     assert isinstance(amwf, AuditMatrixWithFacetsResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_audit_matrix_with_facets_response_field_build_query(dummy_parent):
     from snosearch.fields import AuditMatrixWithFacetsResponseField
     from snosearch.queries import AuditMatrixQueryFactoryWithFacets
@@ -857,6 +1131,11 @@ def test_searches_fields_audit_matrix_with_facets_response_field_build_query(dum
     assert isinstance(amwf.query_builder, AuditMatrixQueryFactoryWithFacets)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_audit_matrix_with_facets_response_field_execute_query(dummy_parent, mocker):
     from snosearch.fields import AuditMatrixWithFacetsResponseField
     from elasticsearch_dsl import Search
@@ -877,6 +1156,11 @@ def test_searches_fields_facet_groups_response_field_init():
     assert isinstance(fg, FacetGroupsResponseField)
 
 
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
 def test_searches_fields_facet_groups_get_facet_groups(dummy_parent):
     from snosearch.fields import FacetGroupsResponseField
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (

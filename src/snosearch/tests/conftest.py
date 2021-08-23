@@ -24,11 +24,35 @@ def dummy_registry(testing_types, testing_configs):
 
 
 @pytest.fixture
-def dummy_request(dummy_registry):
-    from snosearch.adapters.requests import DummyRequest
-    dummy_request = DummyRequest({}).blank('/dummy')
+def pyramid_dummy_request(dummy_registry):
+    from snosearch.tests.dummy_requests import PyramidDummyRequest
+    dummy_request = PyramidDummyRequest({}).blank('/dummy')
     dummy_request.registry = dummy_registry
     return dummy_request
+
+
+@pytest.fixture
+def flask_dummy_request(dummy_registry):
+    from snosearch.tests.dummy_requests import FlaskDummyRequestAdapter
+    from flask import Request
+    from flask import Response
+    dummy_request = FlaskDummyRequestAdapter(
+        Request(
+            {
+                'PATH_INFO': '/dummy'
+            }
+        )
+    )
+    dummy_request.registry = dummy_registry
+    dummy_request.response = Response()
+    return dummy_request
+
+
+@pytest.fixture
+def dummy_request(request, pyramid_dummy_request, flask_dummy_request):
+    if hasattr(request, 'param') and request.param == 'flask':
+        return flask_dummy_request
+    return pyramid_dummy_request
 
 
 @pytest.fixture
