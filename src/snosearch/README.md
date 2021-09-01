@@ -1,23 +1,23 @@
 ## High-level overview of search package
 
-The search module sits between a user's search request and our ElasticSearch cluster. It is responsible for converting the query string from a user's request into an ElasticSearch query, executing the query, gathering the raw results, and formatting them in a way that the frontend expects. The general goal is to keep each of these steps as decoupled as possible so that it's easy to reuse and extend the functionality in new views. For examples it's possible to create a new way of building up a query or formatting raw results and drop them into place without modifying the surrounding components.
+The search module sits between a user's search request and an Elasticsearch cluster. It is responsible for converting the query string from a user's request into an Elasticsearch query, executing the query, gathering the raw results, and formatting them in a way that the frontend expects. The general goal is to keep each of these steps as decoupled as possible so that it's easy to reuse and extend the functionality in new views. For example it's possible to create a new way of building up a query or formatting raw results and drop them into place without modifying the surrounding components.
 
-How this package is used to create Pyramid views can be seen in **src/snowflakes/search_views.py** and **src/snowflakes/tests/test_searchv2.py**. There are extensive tests for every component (e.g. **snovault/tests/test_searches_responses.py**) that document expected behavior.
+There are extensive tests for every component (e.g. **tests/test_searches_responses.py**) that document expected behavior.
 
 ### Object relationships
 
-Pyramid view (**snowflakes.search_views.py**) -> renders *FieldedResponse* (**responses.py**) -> contains many *ResponseFields* (**fields.py**)
+Some view -> renders *FieldedResponse* (**responses.py**) -> contains many *ResponseFields* (**fields.py**)
 
 ### Manifest of modules
-* configs.py - Specialized helper classes for filtering parameters passed to certain ElasticSearch aggregations
+* configs.py - Specialized helper classes for filtering parameters passed to certain Elasticsearch aggregations
 * decorators.py - General helper decorators for exception handling and dict filtering
 * defaults.py - Default parameters and templates used in query building (ALL_CAPS variables)
 * __fields.py__ - Classes that define the fields that are returned in JSON, specifically subclasses for different types of searches, matrices, etc.
 * interfaces.py - Constants that alias raw strings (ALL_CAPS variables)
-* __mixins.py__ - Classes mixed in to *FieldedResponse* that allow for flexible formatting of raw ElasticSearch results
+* __mixins.py__ - Classes mixed in to *FieldedResponse* that allow for flexible formatting of raw Elasticsearch results
 * __parsers.py__ - Class for parsing and maniuplating the query string passed in by the user
 * __queries.py__ - Classes and subclasses for generating specific Elasticseach queries
-* __responses.py__ - Classes for wrapping raw ElasticSearch responses (*QueryResponse* and subclasses) and Pyramid view responses (*FieldedReponse* and subclasses)
+* __responses.py__ - Classes for wrapping raw Elasticsearch responses (*QueryResponse* and subclasses) and Pyramid view responses (*FieldedReponse* and subclasses)
 
 \* Note that bolded modules contain core functionality, unbolded are less important/contain implementation details.
 
@@ -32,15 +32,15 @@ A simple example just returns a hardcoded dictionary:
 A real example:
 
 - The *BasicSearchResponseField* splits up its rendering into three parts:
-    - (1) Build an ElasticSearch query
+    - (1) Build an Elasticsearch query
     - (2) Execute the query and gather raw search results
     - (3) Format raw search results into dictionary used by frontend
 
 All of these steps call other classes to do the work for them. 
 
-**In the case of (1) Building an ElasticSearch query:**
+**In the case of (1) Building an Elasticsearch query:**
 -  The *BasicSearchResponseField* uses the *BasicQueryFactory* (**queries.py**) which inherits from *AbstractQueryFactory*
-- *AbstractQueryFactory* has all of the basic methods required to build up an ElasticSearch query (e.g. adding filters, aggregations, etc.). It makes use of another class called *ParamsParser* (**parsers.py**) that makes parsing the query string passed in by the user convenient (and tested!). For example:
+- *AbstractQueryFactory* has all of the basic methods required to build up an Elasticsearch query (e.g. adding filters, aggregations, etc.). It makes use of another class called *ParamsParser* (**parsers.py**) that makes parsing the query string passed in by the user convenient (and tested!). For example:
     - method to pull all of the params that match a key (e.g. field=status)
     - method to split params by whether they are equal (status=released) or not equal (status!=in progress)
     - method to split params by whether they are exists (s3_uri=\*) or not exists (s3_uri!=\*)
@@ -71,4 +71,4 @@ For example: *TitleResponseField*.render() --> return {"title": "Experiment"}
 
 Some of these are very simple methods, but others are very complex/have multiple steps/dependencies. Having a common interface to all makes wrapping and rendering arbitrary code convenient. It also allows components to be reusable and insulated from changes in other parts of the system.
 
-In the case of other types of ElasticSearch queries there are other subclasses of *AbstractQueryFactory* that build specific queries, e.g. *BasicMatrixQueryFactory* (**queries.py**). In many cases these share a lot of the same functionality as the parent classes but will have additional steps (e.g. adding specific aggregations needed by the Experiment matrix), or will override certain parent methods (e.g. raising an error if more than one type is specified in matrix query string).
+In the case of other types of Elasticsearch queries there are other subclasses of *AbstractQueryFactory* that build specific queries, e.g. *BasicMatrixQueryFactory* (**queries.py**). In many cases these share a lot of the same functionality as the parent classes but will have additional steps (e.g. adding specific aggregations needed by the Experiment matrix), or will override certain parent methods (e.g. raising an error if more than one type is specified in matrix query string).
