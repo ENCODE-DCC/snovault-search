@@ -469,11 +469,8 @@ class AbstractQueryFactory:
         return any(conditions)
 
     def _get_bounded_limit_value_or_default(self):
-        default_limit = self.params_parser.get_one_value(
-            params=self._get_default_limit()
-        )
         if self._should_scan_over_results():
-            return default_limit
+            return 0
         return self._get_limit_value_as_int()
 
     @assert_one_or_none_returned(error_message='Invalid to specify multiple mode parameters:')

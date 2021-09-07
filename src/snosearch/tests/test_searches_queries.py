@@ -1419,6 +1419,13 @@ def test_searches_queries_abstract_query_factory_limit_is_over_maximum_window(pa
     )
     params_parser = ParamsParser(dummy_request)
     aq = AbstractQueryFactory(params_parser)
+    assert not aq._limit_is_over_maximum_window()
+    dummy_request.environ['QUERY_STRING'] = (
+        'type=TestingSearchSchema&status=released'
+        '&limit=100000&field=@id&mode=picker&mode=chair&field=accession'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
     assert aq._limit_is_over_maximum_window()
     dummy_request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
@@ -1515,12 +1522,28 @@ def test_searches_queries_abstract_query_factory_get_bounded_limit_value_or_defa
     assert limit == 10
     dummy_request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
-        '&limit=all&field=@id&mode=picker&mode=chair&field=accession'
+        '&limit=25&field=@id&mode=picker&mode=chair&field=accession'
     )
     params_parser = ParamsParser(dummy_request)
     aq = AbstractQueryFactory(params_parser)
     limit = aq._get_bounded_limit_value_or_default()
     assert limit == 25
+    dummy_request.environ['QUERY_STRING'] = (
+        'type=TestingSearchSchema&status=released'
+        '&limit=all&field=@id&mode=picker&mode=chair&field=accession'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    limit = aq._get_bounded_limit_value_or_default()
+    assert limit == 0
+    dummy_request.environ['QUERY_STRING'] = (
+        'type=TestingSearchSchema&status=released'
+        '&limit=100000&field=@id&mode=picker&mode=chair&field=accession'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    limit = aq._get_bounded_limit_value_or_default()
+    assert limit == 0
 
 
 @pytest.mark.parametrize(
@@ -4094,7 +4117,7 @@ def test_searches_queries_abstract_query_factory_add_slice(params_parser, dummy_
     params_parser = ParamsParser(dummy_request)
     aq = AbstractQueryFactory(params_parser)
     aq.add_slice()
-    assert aq.search.to_dict() == {'from': 0, 'size': 25, 'query': {'match_all': {}}}
+    assert aq.search.to_dict() == {'from': 0, 'size': 0, 'query': {'match_all': {}}}
     dummy_request.environ['QUERY_STRING'] = (
         'searchTerm=chip-seq&type=TestingSearchSchema&frame=object&limit=3000'
     )
@@ -4115,7 +4138,14 @@ def test_searches_queries_abstract_query_factory_add_slice(params_parser, dummy_
     params_parser = ParamsParser(dummy_request)
     aq = AbstractQueryFactory(params_parser)
     aq.add_slice()
-    assert aq.search.to_dict() == {'from': 0, 'size': 25, 'query': {'match_all': {}}}
+    assert aq.search.to_dict() == {'from': 0, 'size': 10000, 'query': {'match_all': {}}}
+    dummy_request.environ['QUERY_STRING'] = (
+        'searchTerm=chip-seq&type=TestingSearchSchema&frame=object&limit=100000'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    aq.add_slice()
+    assert aq.search.to_dict() == {'from': 0, 'size': 0, 'query': {'match_all': {}}}
 
 
 @pytest.mark.parametrize(
@@ -4999,7 +5029,7 @@ def test_searches_queries_basic_report_query_factory_with_facets_add_slice(dummy
     brqf.add_slice()
     q = brqf.search.to_dict()
     assert q['from'] == 25
-    assert q['size'] == 25
+    assert q['size'] == 0
     dummy_request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
         '&from=25&field=@id&field=accession&mode=picker'
@@ -5032,14 +5062,14 @@ def test_searches_queries_basic_report_query_factory_with_facets_add_slice(dummy
     assert q['size'] == 9999
     dummy_request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
-        '&limit=10000&field=@id&field=accession&mode=picker'
+        '&limit=100000&field=@id&field=accession&mode=picker'
     )
     params_parser = ParamsParser(dummy_request)
     brqf = BasicReportQueryFactoryWithFacets(params_parser)
     brqf.add_slice()
     q = brqf.search.to_dict()
     assert q['from'] == 0
-    assert q['size'] == 25
+    assert q['size'] == 0
 
 
 @pytest.mark.parametrize(
