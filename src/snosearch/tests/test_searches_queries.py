@@ -1434,6 +1434,26 @@ def test_searches_queries_abstract_query_factory_limit_is_over_maximum_window(pa
     params_parser = ParamsParser(dummy_request)
     aq = AbstractQueryFactory(params_parser)
     assert not aq._limit_is_over_maximum_window()
+    dummy_request.environ['QUERY_STRING'] = (
+        'type=TestingSearchSchema&status=released'
+        '&limit=9&field=@id&mode=picker&mode=chair&field=accession'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(
+        params_parser,
+        max_result_window=10,
+    )
+    assert not aq._limit_is_over_maximum_window()
+    dummy_request.environ['QUERY_STRING'] = (
+        'type=TestingSearchSchema&status=released'
+        '&limit=11&field=@id&mode=picker&mode=chair&field=accession'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(
+        params_parser,
+        max_result_window=10,
+    )
+    assert aq._limit_is_over_maximum_window()
 
 
 @pytest.mark.parametrize(

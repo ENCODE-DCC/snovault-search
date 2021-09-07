@@ -413,6 +413,9 @@ class AbstractQueryFactory:
     def _get_default_limit(self):
         return [(LIMIT_KEY, 25)]
 
+    def _get_max_result_window(self):
+        return self.kwargs.get('max_result_window', MAX_ES_RESULTS_WINDOW)
+
     @assert_one_or_none_returned(error_message='Invalid to specify multiple limit parameters:')
     def _get_limit(self):
         return self.params_parser.get_limit() or self._get_default_limit()
@@ -440,7 +443,7 @@ class AbstractQueryFactory:
     def _limit_is_over_maximum_window(self):
         limit = self._get_limit_value_as_int()
         if limit:
-            return limit > MAX_ES_RESULTS_WINDOW
+            return limit > self._get_max_result_window()
         return False
 
     def _should_scan_over_results(self):
@@ -936,7 +939,7 @@ class AbstractQueryFactory:
 
     def add_slice(self):
         '''
-        If limit=all or limit > MAX_ES_RESULTS_WINDOW we return
+        If limit=all or limit > max result window we return
         default slice for the aggregations/total and scan over results
         in response mixin to_graph method.
         '''
