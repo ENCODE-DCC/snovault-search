@@ -210,7 +210,8 @@ class HitsToGraphMixin:
             yield r
 
     def _scan(self):
-        results = self.results._search.scan()
+        size = self.query_builder._get_max_result_window()
+        results = self.results._search.params(size=size).scan()
         if not self.query_builder._limit_is_all():
             results = self._limit_generator(
                 results,
