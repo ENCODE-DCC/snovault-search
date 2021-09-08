@@ -1292,6 +1292,43 @@ def test_searches_queries_abstract_query_factory_get_default_limit(params_parser
 
 
 @pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_get_max_result_window(params_parser):
+    from snosearch.queries import AbstractQueryFactory
+    aq = AbstractQueryFactory(params_parser)
+    max_result_window = aq._get_max_result_window()
+    assert max_result_window == 9999
+    aq = AbstractQueryFactory(
+        params_parser,
+        max_result_window=99999,
+    )
+    max_result_window = aq._get_max_result_window()
+    assert max_result_window == 99999
+
+
+
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_get_scan_size(params_parser):
+    from snosearch.queries import AbstractQueryFactory
+    aq = AbstractQueryFactory(params_parser)
+    scan_size = aq._get_scan_size()
+    assert scan_size == 1000
+    aq = AbstractQueryFactory(
+        params_parser,
+        scan_size=200000,
+    )
+    scan_size = aq._get_scan_size()
+    assert scan_size == 200000
+
+
+@pytest.mark.parametrize(
     'params_parser, dummy_request',
     [
         ('pyramid', 'pyramid'),
@@ -1417,8 +1454,13 @@ def test_searches_queries_abstract_query_factory_limit_is_over_maximum_window(pa
         'type=TestingSearchSchema&status=released'
         '&limit=10000&field=@id&mode=picker&mode=chair&field=accession'
     )
-    params_parser = ParamsParser(dummy_request)
-    aq = AbstractQueryFactory(params_parser)
+    params_parser = ParamsParser(
+        dummy_request
+    )
+    aq = AbstractQueryFactory(
+        params_parser,
+        max_result_window=10000,
+    )
     assert not aq._limit_is_over_maximum_window()
     dummy_request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
@@ -4158,14 +4200,17 @@ def test_searches_queries_abstract_query_factory_add_slice(params_parser, dummy_
     params_parser = ParamsParser(dummy_request)
     aq = AbstractQueryFactory(params_parser)
     aq.add_slice()
-    assert aq.search.to_dict() == {'from': 0, 'size': 10000, 'query': {'match_all': {}}}
+    assert aq.search.to_dict() == {'from': 0, 'size': 0, 'query': {'match_all': {}}}
     dummy_request.environ['QUERY_STRING'] = (
         'searchTerm=chip-seq&type=TestingSearchSchema&frame=object&limit=100000'
     )
     params_parser = ParamsParser(dummy_request)
-    aq = AbstractQueryFactory(params_parser)
+    aq = AbstractQueryFactory(
+        params_parser,
+        max_result_window=200000,
+    )
     aq.add_slice()
-    assert aq.search.to_dict() == {'from': 0, 'size': 0, 'query': {'match_all': {}}}
+    assert aq.search.to_dict() == {'from': 0, 'size': 100000, 'query': {'match_all': {}}}
 
 
 @pytest.mark.parametrize(

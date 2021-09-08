@@ -23,6 +23,7 @@ from .defaults import BASE_RETURN_FIELDS
 from .defaults import BASE_SEARCH_FIELDS
 from .defaults import DEFAULT_COLUMNS
 from .defaults import DEFAULT_FRAMES
+from .defaults import DEFAULT_SCAN_SIZE
 from .defaults import DEFAULT_SORT
 from .defaults import DEFAULT_SORT_OPTIONS
 from .defaults import INTERNAL_AUDIT_FACETS
@@ -415,6 +416,9 @@ class AbstractQueryFactory:
 
     def _get_max_result_window(self):
         return self.kwargs.get('max_result_window', MAX_ES_RESULTS_WINDOW)
+
+    def _get_scan_size(self):
+        return self.kwargs.get('scan_size', DEFAULT_SCAN_SIZE)
 
     @assert_one_or_none_returned(error_message='Invalid to specify multiple limit parameters:')
     def _get_limit(self):
