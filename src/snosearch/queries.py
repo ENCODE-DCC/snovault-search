@@ -23,6 +23,7 @@ from .defaults import BASE_RETURN_FIELDS
 from .defaults import BASE_SEARCH_FIELDS
 from .defaults import DEFAULT_COLUMNS
 from .defaults import DEFAULT_FRAMES
+from .defaults import DEFAULT_SCAN_SIZE
 from .defaults import DEFAULT_SORT
 from .defaults import DEFAULT_SORT_OPTIONS
 from .defaults import INTERNAL_AUDIT_FACETS
@@ -413,6 +414,12 @@ class AbstractQueryFactory:
     def _get_default_limit(self):
         return [(LIMIT_KEY, 25)]
 
+    def _get_max_result_window(self):
+        return self.kwargs.get('max_result_window', MAX_ES_RESULTS_WINDOW)
+
+    def _get_scan_size(self):
+        return self.kwargs.get('scan_size', DEFAULT_SCAN_SIZE)
+
     @assert_one_or_none_returned(error_message='Invalid to specify multiple limit parameters:')
     def _get_limit(self):
         return self.params_parser.get_limit() or self._get_default_limit()
@@ -440,7 +447,7 @@ class AbstractQueryFactory:
     def _limit_is_over_maximum_window(self):
         limit = self._get_limit_value_as_int()
         if limit:
-            return limit > MAX_ES_RESULTS_WINDOW
+            return limit > self._get_max_result_window()
         return False
 
     def _should_scan_over_results(self):
@@ -469,11 +476,8 @@ class AbstractQueryFactory:
         return any(conditions)
 
     def _get_bounded_limit_value_or_default(self):
-        default_limit = self.params_parser.get_one_value(
-            params=self._get_default_limit()
-        )
         if self._should_scan_over_results():
-            return default_limit
+            return 0
         return self._get_limit_value_as_int()
 
     @assert_one_or_none_returned(error_message='Invalid to specify multiple mode parameters:')
@@ -939,7 +943,7 @@ class AbstractQueryFactory:
 
     def add_slice(self):
         '''
-        If limit=all or limit > MAX_ES_RESULTS_WINDOW we return
+        If limit=all or limit > max result window we return
         default slice for the aggregations/total and scan over results
         in response mixin to_graph method.
         '''
