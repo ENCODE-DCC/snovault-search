@@ -592,7 +592,7 @@ class ColumnsResponseField(ResponseField):
     def render(self, *args, **kwargs):
         self.parent = kwargs.get('parent')
         return {
-            COLUMNS: self.get_query_builder()._get_columns_for_item_types()
+            COLUMNS: self.get_query_builder()._get_columns_from_configs_or_item_types()
         }
 
 

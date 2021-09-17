@@ -220,6 +220,13 @@ class AbstractQueryFactory:
             self._get_configs_from_item_types_as_combined_key()
         )
 
+    @staticmethod
+    def _try_to_extract_columns_from_configs(configs):
+        columns_from_configs = {}
+        for config in configs:
+            columns_from_configs.update(config.columns)
+        return columns_from_configs
+
     def _get_base_columns(self):
         return OrderedDict(BASE_COLUMNS)
 
@@ -232,7 +239,11 @@ class AbstractQueryFactory:
         }
 
     def _get_columns_for_item_type(self, item_type):
-        return self._get_search_config_for_item_type(item_type).get(COLUMNS, {})
+        return self._try_to_extract_columns_from_configs(
+            self._get_search_configs_by_names(
+                [item_type]
+            )
+        )
 
     def _get_columns_for_item_types(self, item_types=None):
         columns = self._get_base_columns()
@@ -244,6 +255,25 @@ class AbstractQueryFactory:
                 self._get_columns_for_item_type(item_type)
                 or self._get_default_columns_for_item_type(item_type)
             )
+        return columns
+
+    def _try_to_get_columns_from_config_param_values(self):
+        return self._try_to_extract_columns_from_configs(
+            self._get_configs_from_config_param_values()
+        )
+
+    def _try_to_get_columns_from_item_types_as_combined_key(self):
+        return self._try_to_extract_columns_from_configs(
+            self._get_configs_from_item_types_as_combined_key()
+        )
+
+    def _get_columns_from_configs_or_item_types(self):
+        columns = self._get_base_columns()
+        columns.update(
+            self._try_to_get_columns_from_config_param_values()
+            or self._try_to_get_columns_from_item_types_as_combined_key()
+            or self._get_columns_for_item_types()
+        )
         return columns
 
     def _get_invalid_item_types(self, item_types):
@@ -526,7 +556,7 @@ class AbstractQueryFactory:
         )
 
     def _get_return_fields_from_schema_columns(self):
-        columns = self._get_columns_for_item_types()
+        columns = self._get_columns_from_configs_or_item_types()
         return self._prefix_values(
             EMBEDDED,
             [c for c in columns]

@@ -496,6 +496,139 @@ def test_searches_queries_abstract_query_factory_get_columns_for_item_types(dumm
 
 
 @pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_get_columns_from_configs_or_item_types(dummy_request):
+    from snosearch.parsers import ParamsParser
+    from snosearch.queries import AbstractQueryFactory
+    from snosearch.interfaces import SEARCH_CONFIG
+    search_registry = dummy_request.registry[SEARCH_CONFIG]
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    columns = aq._get_columns_from_configs_or_item_types()
+    assert dict(columns) == {
+        '@id': {'title': 'ID'},
+        'accession': {'title': 'Accession'},
+        'status': {'title': 'Status'}
+    }
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingPostPutPatch'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    columns = aq._get_columns_from_configs_or_item_types()
+    assert dict(columns) == {
+        '@id': {'title': 'ID'},
+        'accession': {'title': 'Accession'}
+    }
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingPostPutPatch'
+        '&config=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    columns = aq._get_columns_from_configs_or_item_types()
+    assert dict(columns) == {
+        '@id': {'title': 'ID'},
+        'accession': {'title': 'Accession'},
+        'status': {'title': 'Status'}
+    }
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingPostPutPatch'
+        '&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    columns = aq._get_columns_from_configs_or_item_types()
+    assert dict(columns) == {
+        '@id': {'title': 'ID'},
+        'accession': {'title': 'Accession'},
+        'status': {'title': 'Status'}
+    }
+    defaults = {
+        ('TestingPostPutPatch', 'TestingSearchSchema'): ['TestingDownload']
+    }
+    search_registry.add_defaults(defaults)
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingPostPutPatch'
+        '&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    columns = aq._get_columns_from_configs_or_item_types()
+    assert dict(columns) == {
+        '@id': {'title': 'ID'},
+        'attachment': {'title': 'Attachment'},
+    }
+
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_try_to_extract_columns_from_configs(dummy_request):
+    from snosearch.parsers import ParamsParser
+    from snosearch.queries import AbstractQueryFactory
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    configs = aq._get_configs_from_item_types_as_individual_keys()
+    columns = aq._try_to_extract_columns_from_configs(configs)
+    assert dict(columns) == {
+        'accession': {'title': 'Accession'},
+        'status': {'title': 'Status'}
+    }
+
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_try_to_get_columns_from_config_param_values(dummy_request):
+    from snosearch.parsers import ParamsParser
+    from snosearch.queries import AbstractQueryFactory
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&config=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    columns = aq._try_to_get_columns_from_config_param_values()
+    assert dict(columns) == {
+        'accession': {'title': 'Accession'},
+        'status': {'title': 'Status'}
+    }
+
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_try_to_get_columns_from_item_types_as_combined_key(dummy_request):
+    from snosearch.parsers import ParamsParser
+    from snosearch.queries import AbstractQueryFactory
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    columns = aq._try_to_get_columns_from_item_types_as_combined_key()
+    assert dict(columns) == {
+        'accession': {'title': 'Accession'},
+        'status': {'title': 'Status'}
+    }
+
+
+@pytest.mark.parametrize(
     'params_parser_snovault_types',
     integrations,
     indirect=True

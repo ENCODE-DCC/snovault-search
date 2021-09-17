@@ -332,6 +332,11 @@ def testing_download_type():
         'item_type': 'testing_download',
         'schema': {
             'type': 'object',
+            'columns': {
+                'attachment': {
+                    'title': 'Attachment'
+                }
+            },
             'properties': {
                 '@id': {
                     'notSubmittable': True,
