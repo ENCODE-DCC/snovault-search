@@ -257,21 +257,12 @@ class AbstractQueryFactory:
             )
         return columns
 
-    def _try_to_get_columns_from_config_param_values(self):
-        return self._try_to_extract_columns_from_configs(
-            self._get_configs_from_config_param_values()
-        )
-
-    def _try_to_get_columns_from_item_types_as_combined_key(self):
-        return self._try_to_extract_columns_from_configs(
-            self._get_configs_from_item_types_as_combined_key()
-        )
-
     def _get_columns_from_configs_or_item_types(self):
         columns = self._get_base_columns()
         columns.update(
-            self._try_to_get_columns_from_config_param_values()
-            or self._try_to_get_columns_from_item_types_as_combined_key()
+            self._try_to_extract_columns_from_configs(
+                self._get_configs_from_param_values_or_item_types_as_combined_key()
+            )
             or self._get_columns_for_item_types()
         )
         return columns
