@@ -181,7 +181,7 @@ class AbstractQueryFactory:
             use_defaults=False,
         )
 
-    def _get_configs_from_item_types(self):
+    def _get_configs_from_item_types_as_combined_key(self):
         # Passing all the item types as one key.
         return self._get_search_configs_by_names(
             [
@@ -193,10 +193,25 @@ class AbstractQueryFactory:
             ]
         )
 
-    def _get_configs_from_param_values_or_item_types(self):
+    def _get_configs_from_item_types_as_individual_keys(self):
+        return self._get_search_configs_by_names(
+            self.params_parser.param_values_to_list(
+                params=self._get_item_types()
+            )
+        )
+
+    def _get_configs_from_default_item_types_as_individual_keys(self):
+        return self._get_search_configs_by_names(
+            self.params_parser.param_values_to_list(
+                params=self._get_default_item_types()
+            )
+        )
+
+
+    def _get_configs_from_param_values_or_item_types_as_combined_key(self):
         return (
             self._get_configs_from_config_param_values() or
-            self._get_configs_from_item_types()
+            self._get_configs_from_item_types_as_combined_key()
         )
 
     def _get_base_columns(self):
@@ -323,7 +338,7 @@ class AbstractQueryFactory:
     def _get_facets_from_configs(self):
         return [
             facet
-            for config in self._get_configs_from_param_values_or_item_types()
+            for config in self._get_configs_from_param_values_or_item_types_as_combined_key()
             for facet in config.facets.items()
         ]
 
