@@ -277,6 +277,20 @@ def test_searches_queries_abstract_query_factory_get_schema_for_item_type(params
     integrations,
     indirect=True
 )
+def test_searches_queries_abstract_query_factory_get_search_config_for_item_type(params_parser_snovault_types):
+    from snosearch.queries import AbstractQueryFactory
+    from snosearch.configs import SearchConfig
+    aq = AbstractQueryFactory(params_parser_snovault_types)
+    config = aq._get_search_config_for_item_type('TestingSearchSchema')
+    assert isinstance(config, SearchConfig)
+    assert 'properties' in config
+
+
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_search_configs_by_names(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.configs import SearchConfig

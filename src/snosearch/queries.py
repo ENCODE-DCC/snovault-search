@@ -142,6 +142,12 @@ class AbstractQueryFactory:
     def _get_schema_for_item_type(self, item_type):
         return self._get_registered_types()[item_type].schema
 
+    def _get_search_config_for_item_type(self, item_type):
+        return self._get_search_config_registry().get(
+            item_type,
+            {}
+        )
+
     def _get_search_configs_by_names(self, names, use_defaults=True):
         return self._get_search_config_registry().get_configs_by_names(
             names,
@@ -162,10 +168,10 @@ class AbstractQueryFactory:
         )
 
     def _get_properties_for_item_type(self, item_type):
-        return self._get_schema_for_item_type(item_type).get(PROPERTIES, {})
+        return self._get_search_config_for_item_type(item_type).get(PROPERTIES, {})
 
     def _get_boost_values_for_item_type(self, item_type):
-        return self._get_schema_for_item_type(item_type).get(BOOST_VALUES, {})
+        return self._get_search_config_for_item_type(item_type).get(BOOST_VALUES, {})
 
     def _get_config_param_values(self):
         return self.kwargs.get(
@@ -226,7 +232,7 @@ class AbstractQueryFactory:
         }
 
     def _get_columns_for_item_type(self, item_type):
-        return self._get_schema_for_item_type(item_type).get(COLUMNS, {})
+        return self._get_search_config_for_item_type(item_type).get(COLUMNS, {})
 
     def _get_columns_for_item_types(self, item_types=None):
         columns = self._get_base_columns()
