@@ -221,11 +221,34 @@ class AbstractQueryFactory:
         )
 
     @staticmethod
-    def _try_to_extract_columns_from_configs(configs):
-        columns_from_configs = {}
-        for config in configs:
-            columns_from_configs.update(config.columns)
-        return columns_from_configs
+    def _try_to_extract_field_from_configs(field, configs):
+        return [
+            config.get(field)
+            for config in configs
+            if config.get(field)
+        ]
+
+    @staticmethod
+    def _merge_dictionaries(dictionaries):
+        merged_dictionaries = {}
+        for dictionary in dictionaries:
+            merged_dictionaries.update(dictionary)
+        return merged_dictionaries
+
+    def _extract_columns_from_configs(self, configs):
+        return self._merge_dictionaries(
+            self._try_to_extract_field_from_configs(
+                COLUMNS,
+                configs
+            )
+        )
+
+    def _extract_facets_from_configs(self, configs):
+        return [
+            facet
+            for config in configs
+            for facet in config.facets.items()
+        ]
 
     def _get_base_columns(self):
         return OrderedDict(BASE_COLUMNS)
@@ -239,7 +262,7 @@ class AbstractQueryFactory:
         }
 
     def _get_columns_for_item_type(self, item_type):
-        return self._try_to_extract_columns_from_configs(
+        return self._extract_columns_from_configs(
             self._get_search_configs_by_names(
                 [item_type]
             )
@@ -260,8 +283,11 @@ class AbstractQueryFactory:
     def _get_columns_from_configs_or_item_types(self):
         columns = self._get_base_columns()
         columns.update(
-            self._try_to_extract_columns_from_configs(
-                self._get_configs_from_param_values_or_item_types_as_combined_key()
+            self._extract_columns_from_configs(
+                self._get_configs_from_config_param_values()
+            )
+            or self._extract_columns_from_configs(
+                self._get_configs_from_item_types_as_combined_key()
             )
             or self._get_columns_for_item_types()
         )
@@ -363,11 +389,14 @@ class AbstractQueryFactory:
         )
 
     def _get_facets_from_configs(self):
-        return [
-            facet
-            for config in self._get_configs_from_param_values_or_item_types_as_combined_key()
-            for facet in config.facets.items()
-        ]
+        return (
+            self._extract_facets_from_configs(
+                self._get_configs_from_config_param_values()
+            )
+            or self._extract_facets_from_configs(
+                self._get_configs_from_item_types_as_combined_key()
+            )
+        )
 
     def _get_default_and_maybe_item_facets(self):
         facets = self._get_default_facets()

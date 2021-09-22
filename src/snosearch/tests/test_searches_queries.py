@@ -572,7 +572,7 @@ def test_searches_queries_abstract_query_factory_get_columns_from_configs_or_ite
     integrations,
     indirect=True
 )
-def test_searches_queries_abstract_query_factory_try_to_extract_columns_from_configs(dummy_request):
+def test_searches_queries_abstract_query_factory_try_to_extract_field_from_configs(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
     dummy_request.environ['QUERY_STRING'] = (
@@ -581,11 +581,90 @@ def test_searches_queries_abstract_query_factory_try_to_extract_columns_from_con
     params_parser = ParamsParser(dummy_request)
     aq = AbstractQueryFactory(params_parser)
     configs = aq._get_configs_from_item_types_as_individual_keys()
-    columns = aq._try_to_extract_columns_from_configs(configs)
-    assert dict(columns) == {
+    columns = aq._try_to_extract_field_from_configs('columns', configs)
+    assert columns == [
+        {
+            'accession': {'title': 'Accession'},
+            'status': {'title': 'Status'}
+        }
+    ]
+    facets = aq._try_to_extract_field_from_configs('facets', configs)
+    assert facets == [
+        {'status': {'title': 'Status', 'open_on_load': True},
+         'name': {'title': 'Name'}}
+    ]
+    made_up_field = aq._try_to_extract_field_from_configs('made_up_field', configs)
+    assert not made_up_field
+
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_merge_dictionaries(dummy_request):
+    from snosearch.parsers import ParamsParser
+    from snosearch.queries import AbstractQueryFactory
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    configs = aq._get_configs_from_item_types_as_individual_keys()
+    columns = aq._try_to_extract_field_from_configs('columns', configs)
+    assert columns == [
+        {
+            'accession': {'title': 'Accession'},
+            'status': {'title': 'Status'}
+        }
+    ]
+    merged_columns = aq._merge_dictionaries(columns)
+    assert merged_columns == {
         'accession': {'title': 'Accession'},
         'status': {'title': 'Status'}
     }
+
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_extract_columns_from_configs(dummy_request):
+    from snosearch.parsers import ParamsParser
+    from snosearch.queries import AbstractQueryFactory
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    configs = aq._get_configs_from_item_types_as_individual_keys()
+    columns = aq._extract_columns_from_configs(configs)
+    assert columns == {
+        'accession': {'title': 'Accession'},
+        'status': {'title': 'Status'}
+    }
+
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_extract_facets_from_configs(dummy_request):
+    from snosearch.parsers import ParamsParser
+    from snosearch.queries import AbstractQueryFactory
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    configs = aq._get_configs_from_item_types_as_individual_keys()
+    facets = aq._extract_facets_from_configs(configs)
+    assert facets == [
+        ('status', {'title': 'Status', 'open_on_load': True}),
+        ('name', {'title': 'Name'})
+    ]
 
 
 @pytest.mark.parametrize(
