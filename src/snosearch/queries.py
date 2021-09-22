@@ -213,35 +213,18 @@ class AbstractQueryFactory:
             )
         )
 
-
     def _get_configs_from_param_values_or_item_types_as_combined_key(self):
         return (
             self._get_configs_from_config_param_values() or
             self._get_configs_from_item_types_as_combined_key()
         )
 
-    @staticmethod
-    def _try_to_extract_field_from_configs(field, configs):
-        return [
-            config.get(field)
-            for config in configs
-            if config.get(field)
-        ]
-
-    @staticmethod
-    def _merge_dictionaries(dictionaries):
-        merged_dictionaries = {}
-        for dictionary in dictionaries:
-            merged_dictionaries.update(dictionary)
-        return merged_dictionaries
-
     def _extract_columns_from_configs(self, configs):
-        return self._merge_dictionaries(
-            self._try_to_extract_field_from_configs(
-                COLUMNS,
-                configs
-            )
-        )
+        return {
+            k: v
+            for config in configs
+            for k, v in config.columns.items()
+        }
 
     def _extract_facets_from_configs(self, configs):
         return [
@@ -249,6 +232,11 @@ class AbstractQueryFactory:
             for config in configs
             for facet in config.facets.items()
         ]
+
+    def _extract_matrix_from_configs(self, configs):
+        for config in configs:
+            if config.matrix:
+                return config.matrix
 
     def _get_base_columns(self):
         return OrderedDict(BASE_COLUMNS)
@@ -1186,10 +1174,18 @@ class BasicMatrixQueryFactoryWithFacets(BasicSearchQueryFactoryWithFacets):
 
     @assert_something_returned(error_message='Item type does not have requested view defined:')
     def _get_matrix_for_item_type(self, item_type):
-        return getattr(
-            self._get_factory_for_item_type(item_type),
-            self._get_matrix_definition_name(),
-            {}
+        return (
+            self._extract_matrix_from_configs(
+                self._get_configs_from_config_param_values()
+            )
+            or self._extract_matrix_from_configs(
+                self._get_configs_from_item_types_as_combined_key()
+            )
+            or getattr(
+                self._get_factory_for_item_type(item_type),
+                self._get_matrix_definition_name(),
+                {}
+            )
         )
 
     def _get_group_by_fields_by_item_type_and_value(self, item_type, value):
