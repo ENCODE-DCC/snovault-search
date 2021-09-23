@@ -951,6 +951,29 @@ def test_searches_queries_abstract_query_factory_get_facets_from_configs(dummy_r
     assert facets == [
         ('a', 'b')
     ]
+    dummy_request.environ['QUERY_STRING'] = (
+        'searchTerm=chip-seq&searchTerm=rna&searchTerm!=ENCODE+2'
+        '&type=TestingSearchSchema&config=TestingSearchSchemaSpecialFacets'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    facets = aq._get_facets_from_configs()
+    assert facets == [
+        ('status', {'title': 'Status', 'type': 'exists'}),
+        ('read_count', {'title': 'Read count range', 'type': 'stats'}),
+        ('name', {'title': 'Name'})
+    ]
+    dummy_request.environ['QUERY_STRING'] = (
+        'searchTerm=chip-seq&searchTerm=rna&searchTerm!=ENCODE+2'
+        '&type=TestingSearchSchema&config=TestingPostPutPatch'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    facets = aq._get_facets_from_configs()
+    assert facets == [
+        ('status', {'title': 'Status', 'open_on_load': True}),
+        ('name', {'title': 'Name'})
+    ]
 
 
 @pytest.mark.parametrize(
