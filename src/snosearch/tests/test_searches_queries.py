@@ -283,7 +283,6 @@ def test_searches_queries_abstract_query_factory_get_search_config_for_item_type
     aq = AbstractQueryFactory(params_parser_snovault_types)
     config = aq._get_search_config_for_item_type('TestingSearchSchema')
     assert isinstance(config, SearchConfig)
-    assert 'properties' in config
 
 
 @pytest.mark.parametrize(

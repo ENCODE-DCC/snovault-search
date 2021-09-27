@@ -181,7 +181,6 @@ class SearchConfig(MutableConfig):
         'matrix',
         'fields',
         'facet_groups',
-        'properties',
     ]
 
     def __init__(self, name, config):
