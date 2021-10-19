@@ -592,7 +592,7 @@ class ColumnsResponseField(ResponseField):
     def render(self, *args, **kwargs):
         self.parent = kwargs.get('parent')
         return {
-            COLUMNS: self.get_query_builder()._get_columns_for_item_types()
+            COLUMNS: self.get_query_builder()._get_columns_from_configs_or_item_types()
         }
 
 
@@ -664,7 +664,7 @@ class FacetGroupsResponseField(ResponseField):
 
     def _get_facet_groups(self):
         facet_groups = []
-        for config in self.get_query_builder()._get_configs_from_param_values_or_item_types():
+        for config in self.get_query_builder()._get_configs_from_param_values_or_item_types_as_combined_key():
             schema_facet_groups = config.get('facet_groups', [])
             for schema_facet_group in schema_facet_groups:
                 facet_groups.append(

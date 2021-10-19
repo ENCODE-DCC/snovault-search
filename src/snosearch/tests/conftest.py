@@ -320,7 +320,15 @@ def testing_search_schema_special_facets_type():
                 'status': {
                     'title': 'Status'
                 }
-            }
+            },
+            'matrix': {
+                'x': {
+                    'group_by': 'accession'
+                },
+                'y': {
+                    'group_by': ['status', 'name']
+                }
+            },
         }
     }
 
@@ -332,6 +340,11 @@ def testing_download_type():
         'item_type': 'testing_download',
         'schema': {
             'type': 'object',
+            'columns': {
+                'attachment': {
+                    'title': 'Attachment'
+                }
+            },
             'properties': {
                 '@id': {
                     'notSubmittable': True,

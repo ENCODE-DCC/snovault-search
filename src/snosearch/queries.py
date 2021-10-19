@@ -142,6 +142,12 @@ class AbstractQueryFactory:
     def _get_schema_for_item_type(self, item_type):
         return self._get_registered_types()[item_type].schema
 
+    def _get_search_config_for_item_type(self, item_type):
+        return self._get_search_config_registry().get(
+            item_type,
+            {}
+        )
+
     def _get_search_configs_by_names(self, names, use_defaults=True):
         return self._get_search_config_registry().get_configs_by_names(
             names,
@@ -181,7 +187,7 @@ class AbstractQueryFactory:
             use_defaults=False,
         )
 
-    def _get_configs_from_item_types(self):
+    def _get_configs_from_item_types_as_combined_key(self):
         # Passing all the item types as one key.
         return self._get_search_configs_by_names(
             [
@@ -193,11 +199,44 @@ class AbstractQueryFactory:
             ]
         )
 
-    def _get_configs_from_param_values_or_item_types(self):
+    def _get_configs_from_item_types_as_individual_keys(self):
+        return self._get_search_configs_by_names(
+            self.params_parser.param_values_to_list(
+                params=self._get_item_types()
+            )
+        )
+
+    def _get_configs_from_default_item_types_as_individual_keys(self):
+        return self._get_search_configs_by_names(
+            self.params_parser.param_values_to_list(
+                params=self._get_default_item_types()
+            )
+        )
+
+    def _get_configs_from_param_values_or_item_types_as_combined_key(self):
         return (
             self._get_configs_from_config_param_values() or
-            self._get_configs_from_item_types()
+            self._get_configs_from_item_types_as_combined_key()
         )
+
+    def _extract_columns_from_configs(self, configs):
+        return {
+            k: v
+            for config in configs
+            for k, v in config.columns.items()
+        }
+
+    def _extract_facets_from_configs(self, configs):
+        return [
+            facet
+            for config in configs
+            for facet in config.facets.items()
+        ]
+
+    def _extract_matrix_from_configs(self, configs):
+        for config in configs:
+            if config.matrix:
+                return config.matrix
 
     def _get_base_columns(self):
         return OrderedDict(BASE_COLUMNS)
@@ -223,6 +262,19 @@ class AbstractQueryFactory:
                 self._get_columns_for_item_type(item_type)
                 or self._get_default_columns_for_item_type(item_type)
             )
+        return columns
+
+    def _get_columns_from_configs_or_item_types(self):
+        columns = self._get_base_columns()
+        columns.update(
+            self._extract_columns_from_configs(
+                self._get_configs_from_config_param_values()
+            )
+            or self._extract_columns_from_configs(
+                self._get_configs_from_item_types_as_combined_key()
+            )
+            or self._get_columns_for_item_types()
+        )
         return columns
 
     def _get_invalid_item_types(self, item_types):
@@ -321,11 +373,14 @@ class AbstractQueryFactory:
         )
 
     def _get_facets_from_configs(self):
-        return [
-            facet
-            for config in self._get_configs_from_param_values_or_item_types()
-            for facet in config.facets.items()
-        ]
+        return (
+            self._extract_facets_from_configs(
+                self._get_configs_from_config_param_values()
+            )
+            or self._extract_facets_from_configs(
+                self._get_configs_from_item_types_as_combined_key()
+            )
+        )
 
     def _get_default_and_maybe_item_facets(self):
         facets = self._get_default_facets()
@@ -505,7 +560,7 @@ class AbstractQueryFactory:
         )
 
     def _get_return_fields_from_schema_columns(self):
-        columns = self._get_columns_for_item_types()
+        columns = self._get_columns_from_configs_or_item_types()
         return self._prefix_values(
             EMBEDDED,
             [c for c in columns]
@@ -1115,10 +1170,18 @@ class BasicMatrixQueryFactoryWithFacets(BasicSearchQueryFactoryWithFacets):
 
     @assert_something_returned(error_message='Item type does not have requested view defined:')
     def _get_matrix_for_item_type(self, item_type):
-        return getattr(
-            self._get_factory_for_item_type(item_type),
-            self._get_matrix_definition_name(),
-            {}
+        return (
+            self._extract_matrix_from_configs(
+                self._get_configs_from_config_param_values()
+            )
+            or self._extract_matrix_from_configs(
+                self._get_configs_from_item_types_as_combined_key()
+            )
+            or getattr(
+                self._get_factory_for_item_type(item_type),
+                self._get_matrix_definition_name(),
+                {}
+            )
         )
 
     def _get_group_by_fields_by_item_type_and_value(self, item_type, value):

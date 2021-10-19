@@ -277,6 +277,19 @@ def test_searches_queries_abstract_query_factory_get_schema_for_item_type(params
     integrations,
     indirect=True
 )
+def test_searches_queries_abstract_query_factory_get_search_config_for_item_type(params_parser_snovault_types):
+    from snosearch.queries import AbstractQueryFactory
+    from snosearch.configs import SearchConfig
+    aq = AbstractQueryFactory(params_parser_snovault_types)
+    config = aq._get_search_config_for_item_type('TestingSearchSchema')
+    assert isinstance(config, SearchConfig)
+
+
+@pytest.mark.parametrize(
+    'params_parser_snovault_types',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_abstract_query_factory_get_search_configs_by_names(params_parser_snovault_types):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.configs import SearchConfig
@@ -478,6 +491,159 @@ def test_searches_queries_abstract_query_factory_get_columns_for_item_types(dumm
     assert dict(columns) == {
         '@id': {'title': 'ID'},
         'accession': {'title': 'Accession'}
+    }
+
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_get_columns_from_configs_or_item_types(dummy_request):
+    from snosearch.parsers import ParamsParser
+    from snosearch.queries import AbstractQueryFactory
+    from snosearch.interfaces import SEARCH_CONFIG
+    search_registry = dummy_request.registry[SEARCH_CONFIG]
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    columns = aq._get_columns_from_configs_or_item_types()
+    assert dict(columns) == {
+        '@id': {'title': 'ID'},
+        'accession': {'title': 'Accession'},
+        'status': {'title': 'Status'}
+    }
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingPostPutPatch'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    columns = aq._get_columns_from_configs_or_item_types()
+    assert dict(columns) == {
+        '@id': {'title': 'ID'},
+        'accession': {'title': 'Accession'}
+    }
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingPostPutPatch'
+        '&config=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    columns = aq._get_columns_from_configs_or_item_types()
+    assert dict(columns) == {
+        '@id': {'title': 'ID'},
+        'accession': {'title': 'Accession'},
+        'status': {'title': 'Status'}
+    }
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingPostPutPatch'
+        '&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    columns = aq._get_columns_from_configs_or_item_types()
+    assert dict(columns) == {
+        '@id': {'title': 'ID'},
+        'accession': {'title': 'Accession'},
+        'status': {'title': 'Status'}
+    }
+    defaults = {
+        ('TestingPostPutPatch', 'TestingSearchSchema'): ['TestingDownload']
+    }
+    search_registry.add_defaults(defaults)
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingPostPutPatch'
+        '&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    columns = aq._get_columns_from_configs_or_item_types()
+    assert dict(columns) == {
+        '@id': {'title': 'ID'},
+        'attachment': {'title': 'Attachment'},
+    }
+
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_extract_columns_from_configs(dummy_request):
+    from snosearch.parsers import ParamsParser
+    from snosearch.queries import AbstractQueryFactory
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    configs = aq._get_configs_from_item_types_as_individual_keys()
+    columns = aq._extract_columns_from_configs(configs)
+    assert columns == {
+        'accession': {'title': 'Accession'},
+        'status': {'title': 'Status'}
+    }
+
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_extract_facets_from_configs(dummy_request):
+    from snosearch.parsers import ParamsParser
+    from snosearch.queries import AbstractQueryFactory
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    configs = aq._get_configs_from_item_types_as_individual_keys()
+    facets = aq._extract_facets_from_configs(configs)
+    assert facets == [
+        ('status', {'title': 'Status', 'open_on_load': True}),
+        ('name', {'title': 'Name'})
+    ]
+
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_extract_matrix_from_configs(dummy_request):
+    from snosearch.parsers import ParamsParser
+    from snosearch.queries import AbstractQueryFactory
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    configs = aq._get_configs_from_param_values_or_item_types_as_combined_key()
+    assert not aq._extract_matrix_from_configs(configs)
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingSearchSchemaSpecialFacets'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    configs = aq._get_configs_from_config_param_values()
+    assert not aq._extract_matrix_from_configs(configs)
+    dummy_request.environ['QUERY_STRING'] = (
+        'status=released&type=TestingSearchSchema'
+        '&config=TestingSearchSchema&config=TestingSearchSchemaSpecialFacets'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    configs = aq._get_configs_from_param_values_or_item_types_as_combined_key()
+    assert aq._extract_matrix_from_configs(configs) == {
+        'x': {
+            'group_by': 'accession'
+        },
+        'y': {
+            'group_by': ['status', 'name']
+        }
     }
 
 
@@ -783,6 +949,29 @@ def test_searches_queries_abstract_query_factory_get_facets_from_configs(dummy_r
     facets = aq._get_facets_from_configs()
     assert facets == [
         ('a', 'b')
+    ]
+    dummy_request.environ['QUERY_STRING'] = (
+        'searchTerm=chip-seq&searchTerm=rna&searchTerm!=ENCODE+2'
+        '&type=TestingSearchSchema&config=TestingSearchSchemaSpecialFacets'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    facets = aq._get_facets_from_configs()
+    assert facets == [
+        ('status', {'title': 'Status', 'type': 'exists'}),
+        ('read_count', {'title': 'Read count range', 'type': 'stats'}),
+        ('name', {'title': 'Name'})
+    ]
+    dummy_request.environ['QUERY_STRING'] = (
+        'searchTerm=chip-seq&searchTerm=rna&searchTerm!=ENCODE+2'
+        '&type=TestingSearchSchema&config=TestingPostPutPatch'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    facets = aq._get_facets_from_configs()
+    assert facets == [
+        ('status', {'title': 'Status', 'open_on_load': True}),
+        ('name', {'title': 'Name'})
     ]
 
 
@@ -1968,7 +2157,8 @@ def test_searches_queries_abstract_query_factory_get_configs_from_config_param_v
     assert len(configs) == 1
     assert isinstance(configs[0], SearchConfig)
     assert configs[0].name == 'TestingSearchSchema'
-    assert len(aq._get_configs_from_item_types()) == 0
+    assert len(aq._get_configs_from_item_types_as_combined_key()) == 0
+    assert len(aq._get_configs_from_item_types_as_individual_keys()) == 0
 
 
 @pytest.mark.parametrize(
@@ -1976,7 +2166,7 @@ def test_searches_queries_abstract_query_factory_get_configs_from_config_param_v
     integrations,
     indirect=True
 )
-def test_searches_queries_abstract_query_factory_get_configs_from_configs_from_item_types(dummy_request):
+def test_searches_queries_abstract_query_factory_get_configs_from_item_types_as_combined_key(dummy_request):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.configs import SearchConfig
     from snosearch.parsers import ParamsParser
@@ -1986,11 +2176,20 @@ def test_searches_queries_abstract_query_factory_get_configs_from_configs_from_i
     )
     params_parser = ParamsParser(dummy_request)
     aq = AbstractQueryFactory(params_parser)
-    configs = aq._get_configs_from_item_types()
+    configs = aq._get_configs_from_item_types_as_combined_key()
     assert len(configs) == 1
     assert isinstance(configs[0], SearchConfig)
     assert configs[0].name == 'TestingSearchSchema'
-    assert len(aq._get_configs_from_config_param_values()) == 0
+    assert len(aq._get_configs_from_item_types_as_individual_keys()) == 1
+    dummy_request.environ['QUERY_STRING'] = (
+        'searchTerm=chip-seq&searchTerm=rna&searchTerm!=ENCODE+2'
+        '&type=TestingSearchSchema&type=TestingSearchSchemaSpecialFacets'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    configs = aq._get_configs_from_item_types_as_combined_key()
+    assert len(configs) == 0
+    assert len(aq._get_configs_from_item_types_as_individual_keys()) == 2
 
 
 @pytest.mark.parametrize(
@@ -1998,7 +2197,7 @@ def test_searches_queries_abstract_query_factory_get_configs_from_configs_from_i
     integrations,
     indirect=True
 )
-def test_searches_queries_abstract_query_factory_get_configs_from_param_values_or_item_types(dummy_request):
+def test_searches_queries_abstract_query_factory_get_configs_from_item_types_as_individual_keys(dummy_request):
     from snosearch.queries import AbstractQueryFactory
     from snosearch.configs import SearchConfig
     from snosearch.parsers import ParamsParser
@@ -2008,7 +2207,80 @@ def test_searches_queries_abstract_query_factory_get_configs_from_param_values_o
     )
     params_parser = ParamsParser(dummy_request)
     aq = AbstractQueryFactory(params_parser)
-    configs = aq._get_configs_from_param_values_or_item_types()
+    configs = aq._get_configs_from_item_types_as_individual_keys()
+    assert len(configs) == 1
+    assert isinstance(configs[0], SearchConfig)
+    assert configs[0].name == 'TestingSearchSchema'
+    assert len(aq._get_configs_from_item_types_as_combined_key()) == 1
+    dummy_request.environ['QUERY_STRING'] = (
+        'searchTerm=chip-seq&searchTerm=rna&searchTerm!=ENCODE+2'
+        '&type=TestingSearchSchema&type=TestingSearchSchemaSpecialFacets'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    configs = aq._get_configs_from_item_types_as_individual_keys()
+    assert len(configs) == 2
+    assert len(aq._get_configs_from_item_types_as_combined_key()) == 0
+
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_get_configs_from_default_item_types_as_individual_keys(dummy_request):
+    from snosearch.queries import AbstractQueryFactory
+    from snosearch.configs import SearchConfig
+    from snosearch.parsers import ParamsParser
+    dummy_request.environ['QUERY_STRING'] = (
+        'searchTerm=chip-seq&searchTerm=rna&searchTerm!=ENCODE+2'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    configs = aq._get_configs_from_default_item_types_as_individual_keys()
+    assert len(configs) == 0
+    aq = AbstractQueryFactory(
+        params_parser,
+        default_item_types=[
+            'TestingSearchSchema',
+        ],
+    )
+    configs = aq._get_configs_from_default_item_types_as_individual_keys()
+    assert len(configs) == 1
+    assert isinstance(configs[0], SearchConfig)
+    assert configs[0].name == 'TestingSearchSchema'
+    assert len(aq._get_configs_from_item_types_as_combined_key()) == 0
+    assert len(aq._get_configs_from_item_types_as_individual_keys()) == 0
+    aq = AbstractQueryFactory(
+        params_parser,
+        default_item_types=[
+            'TestingSearchSchema',
+            'TestingSearchSchemaSpecialFacets',
+        ],
+    )
+    configs = aq._get_configs_from_default_item_types_as_individual_keys()
+    assert len(configs) == 2
+    assert 'read_count' in configs[1].facets
+    assert len(aq._get_configs_from_item_types_as_combined_key()) == 0
+    assert len(aq._get_configs_from_item_types_as_individual_keys()) == 0
+
+
+@pytest.mark.parametrize(
+    'dummy_request',
+    integrations,
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_get_configs_from_param_values_or_item_types_as_combined_key(dummy_request):
+    from snosearch.queries import AbstractQueryFactory
+    from snosearch.configs import SearchConfig
+    from snosearch.parsers import ParamsParser
+    dummy_request.environ['QUERY_STRING'] = (
+        'searchTerm=chip-seq&searchTerm=rna&searchTerm!=ENCODE+2'
+        '&type=TestingSearchSchema'
+    )
+    params_parser = ParamsParser(dummy_request)
+    aq = AbstractQueryFactory(params_parser)
+    configs = aq._get_configs_from_param_values_or_item_types_as_combined_key()
     assert len(configs) == 1
     assert isinstance(configs[0], SearchConfig)
     assert configs[0].name == 'TestingSearchSchema'
@@ -2017,7 +2289,7 @@ def test_searches_queries_abstract_query_factory_get_configs_from_param_values_o
     )
     params_parser = ParamsParser(dummy_request)
     aq = AbstractQueryFactory(params_parser)
-    configs = aq._get_configs_from_param_values_or_item_types()
+    configs = aq._get_configs_from_param_values_or_item_types_as_combined_key()
     assert len(configs) == 0
     dummy_request.environ['QUERY_STRING'] = (
         'searchTerm=chip-seq&searchTerm=rna&searchTerm!=ENCODE+2'
@@ -2025,7 +2297,7 @@ def test_searches_queries_abstract_query_factory_get_configs_from_param_values_o
     )
     params_parser = ParamsParser(dummy_request)
     aq = AbstractQueryFactory(params_parser)
-    configs = aq._get_configs_from_param_values_or_item_types()
+    configs = aq._get_configs_from_param_values_or_item_types_as_combined_key()
     assert len(configs) == 2
     assert configs[0].name == 'TestingSearchSchema'
     assert configs[1].name == 'TestConfigItem'
