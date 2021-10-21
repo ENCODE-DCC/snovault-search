@@ -126,6 +126,12 @@ class SearchConfigRegistry:
         config = get_search_config().from_item(item)
         self.update(config)
 
+    def register_pieces_from_item(self, item):
+        config_factory = get_search_config()
+        for piece in config_factory.PIECES_KEYS:
+            config = config_factory.from_item_piece(item, piece)
+            self.update(config)
+
     def clear(self):
         self._initialize_storage()
 
@@ -171,6 +177,25 @@ class MutableConfig(Config):
         self._kwargs.update(kwargs)
 
 
+def to_camel_case(name):
+    return ''.join(
+        value.title()
+        for value in name.split('_')
+    )
+
+
+def make_name_for_piece(item, piece):
+    return f'{item.__name__}{to_camel_case(piece)}'
+
+
+def extract_piece_from_item_pieces(item_pieces, piece):
+    return {
+        k: v
+        for k, v in item_pieces.items()
+        if k == piece
+    }
+
+
 class SearchConfig(MutableConfig):
 
     ITEM_CONFIG_LOCATION = 'schema'
@@ -180,6 +205,11 @@ class SearchConfig(MutableConfig):
         'boost_values',
         'matrix',
         'fields',
+        'facet_groups',
+    ]
+    PIECES_KEYS = [
+        'facets',
+        'columns',
         'facet_groups',
     ]
 
@@ -201,12 +231,27 @@ class SearchConfig(MutableConfig):
         super().__getattr__(attr)
 
     @classmethod
+    def _values_from_item(cls, item):
+        return getattr(
+            item,
+            cls.ITEM_CONFIG_LOCATION,
+            {}
+        )
+
+    @classmethod
     def from_item(cls, item):
         return cls(
             item.__name__,
-            getattr(
-                item,
-                cls.ITEM_CONFIG_LOCATION,
-                {}
+            cls._values_from_item(item)
+        )
+
+    @classmethod
+    def from_item_piece(cls, item, piece):
+        item_pieces = cls._values_from_item(item)
+        return cls(
+            make_name_for_piece(item, piece),
+            extract_piece_from_item_pieces(
+                item_pieces,
+                piece,
             )
         )
