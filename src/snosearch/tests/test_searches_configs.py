@@ -425,23 +425,26 @@ def test_searches_configs_search_config_from_item_piece():
     assert config._kwargs == {
         'columns': ['x', 'y'],
     }
+    assert len(config) == 1
     config = SearchConfig.from_item_piece(mci, 'facets')
     assert config.name == 'MyCustomItemFacets'
     assert config._kwargs == {
         'facets': {'a': 'b'},
     }
+    assert len(config) == 1
     config = SearchConfig.from_item_piece(mci, 'facet_groups')
     assert config.name == 'MyCustomItemFacetGroups'
     assert config._kwargs == {
         'facet_groups': ['t', 'z'],
     }
+    assert len(config) == 1
     config = SearchConfig.from_item_piece(mci, 'other')
     assert config.name == 'MyCustomItemOther'
     assert config._kwargs == {}
     class AbstractItem:
         schema = None
     config = SearchConfig.from_item_piece(AbstractItem, 'facets')
-    assert config._kwargs == {}
+    assert len(config) == 0
 
 
 def test_searches_configs_search_config_registry_register_from_item():
@@ -464,6 +467,7 @@ def test_searches_configs_search_config_registry_register_from_item():
         'columns': ['x', 'y'],
         'facet_groups': ['t', 'z']
     }
+    assert len(config) == 3
 
 
 def test_searches_configs_search_config_registry_register_pieces_from_item():
@@ -486,11 +490,13 @@ def test_searches_configs_search_config_registry_register_pieces_from_item():
     assert config._kwargs == {
         'facets': {'a': 'b'},
     }
+    assert len(config) == 1
     config = registry.get('MyCustomItemFacetGroups')
     assert config.name == 'MyCustomItemFacetGroups'
     assert config._kwargs == {
         'facet_groups': ['t', 'z'],
     }
+    assert len(config) == 1
     config = registry.get('MyCustomItemColumns')
     assert config.name == 'MyCustomItemColumns'
     assert config._kwargs == {
@@ -503,3 +509,4 @@ def test_searches_configs_search_config_registry_register_pieces_from_item():
         'columns': ['x', 'y'],
         'facet_groups': ['t', 'z']
     }
+    assert len(config) == 3
