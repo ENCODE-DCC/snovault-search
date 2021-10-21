@@ -310,6 +310,102 @@ def test_searches_configs_search_config_registry_get_configs_by_names(dummy_requ
         ('name', {'title': 'Name'})
     ]
 
+
+def test_searches_configs_search_config_registry_flatten_single_values():
+    from snosearch.configs import flatten_single_values
+    assert flatten_single_values(('abc',)) == 'abc'
+    assert flatten_single_values(('abc', 'xyz')) == ('abc', 'xyz')
+
+
+def test_searches_configs_search_config_registry_as_dict(dummy_request):
+    from snosearch.interfaces import SEARCH_CONFIG
+    search_registry = dummy_request.registry[SEARCH_CONFIG]
+    expected = {
+        'TestConfigItem': {
+            'facets': {
+                'a': 'b'
+            }
+        },
+        'TestingSearchSchema': {
+            'facet_groups': [
+                {
+                    'title': 'Test group',
+                    'facet_fields': ['status', 'name']
+                }
+            ],
+            'facets': {
+                'status': {
+                    'title': 'Status',
+                    'open_on_load': True
+                },
+                'name': {
+                    'title': 'Name'
+                }
+            },
+            'boost_values': {
+                'accession': 1.0,
+                'status': 1.0,
+                'label': 1.0
+            },
+            'columns': {
+                'accession': {
+                    'title': 'Accession'
+                },
+                'status': {
+                    'title': 'Status'
+                }
+            }
+        },
+        'TestingPostPutPatch': {},
+        'TestingSearchSchemaSpecialFacets': {
+            'facets': {
+                'status': {
+                    'title': 'Status',
+                    'type': 'exists'
+                },
+                'read_count': {
+                    'title': 'Read count range',
+                    'type': 'stats'
+                },
+                'name': {
+                    'title': 'Name'
+                }
+            },
+            'boost_values': {
+                'accession': 1.0,
+                'status': 1.0,
+                'label': 1.0
+            },
+            'columns': {
+                'accession': {
+                    'title': 'Accession'
+                },
+                'status': {
+                    'title': 'Status'
+                }
+            },
+            'matrix': {
+                'x': {
+                    'group_by': 'accession'
+                },
+                'y': {
+                    'group_by': ['status', 'name']
+                }
+            }
+        },
+        'TestingDownload': {
+            'columns': {
+                'attachment': {
+                    'title': 'Attachment'
+                }
+            }
+        },
+        'Item': {}
+    }
+    actual = search_registry.as_dict()
+    assert actual == expected
+
+
 def test_searches_configs_search_config_can_update():
     from snosearch.configs import SearchConfig
     from snosearch.configs import SearchConfigRegistry

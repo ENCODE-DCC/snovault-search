@@ -91,6 +91,12 @@ def get_search_config():
     return SearchConfig
 
 
+def flatten_single_values(values):
+    if len(values) == 1:
+        return values[0]
+    return values
+
+
 class SearchConfigRegistry:
 
     def __init__(self):
@@ -170,6 +176,12 @@ class SearchConfigRegistry:
             for config in configs
             if config
         ]
+
+    def as_dict(self):
+        return {
+            flatten_single_values(name): dict(config.items())
+            for name, config in self.registry.as_dict().items()
+        }
 
 
 class MutableConfig(Config):
