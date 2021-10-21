@@ -385,9 +385,12 @@ def test_searches_configs_search_config_values_from_item():
             'facets': {'a': 'b'},
             'columns': ['x', 'y'],
         }
-    mci = MyCustomItem()
-    values = SearchConfig._values_from_item(mci)
+    values = SearchConfig._values_from_item(MyCustomItem)
     assert values == MyCustomItem.schema
+    class AbstractItem:
+        schema = None
+    values = SearchConfig._values_from_item(AbstractItem)
+    assert values is None
 
 
 def test_searches_configs_search_config_from_item():
@@ -434,6 +437,10 @@ def test_searches_configs_search_config_from_item_piece():
     }
     config = SearchConfig.from_item_piece(mci, 'other')
     assert config.name == 'MyCustomItemOther'
+    assert config._kwargs == {}
+    class AbstractItem:
+        schema = None
+    config = SearchConfig.from_item_piece(AbstractItem, 'facets')
     assert config._kwargs == {}
 
 

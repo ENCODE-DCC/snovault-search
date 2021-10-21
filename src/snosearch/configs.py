@@ -247,7 +247,7 @@ class SearchConfig(MutableConfig):
 
     @classmethod
     def from_item_piece(cls, item, piece):
-        item_pieces = cls._values_from_item(item)
+        item_pieces = cls._values_from_item(item) or {}
         return cls(
             make_name_for_piece(item, piece),
             extract_piece_from_item_pieces(
