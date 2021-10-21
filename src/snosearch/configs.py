@@ -130,7 +130,8 @@ class SearchConfigRegistry:
         config_factory = get_search_config()
         for piece in config_factory.PIECES_KEYS:
             config = config_factory.from_item_piece(item, piece)
-            self.update(config)
+            if len(config) > 0:
+                self.update(config)
 
     def clear(self):
         self._initialize_storage()

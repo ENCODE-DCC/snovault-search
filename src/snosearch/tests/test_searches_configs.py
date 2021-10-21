@@ -510,3 +510,9 @@ def test_searches_configs_search_config_registry_register_pieces_from_item():
         'facet_groups': ['t', 'z']
     }
     assert len(config) == 3
+    class TypeWithNoPieces:
+        schema = {}
+    registry = SearchConfigRegistry()
+    assert len(registry.registry.as_dict()) == 0
+    registry.register_pieces_from_item(TypeWithNoPieces)
+    assert len(registry.registry.as_dict()) == 0
