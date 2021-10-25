@@ -310,6 +310,102 @@ def test_searches_configs_search_config_registry_get_configs_by_names(dummy_requ
         ('name', {'title': 'Name'})
     ]
 
+
+def test_searches_configs_search_config_registry_flatten_single_values():
+    from snosearch.configs import flatten_single_values
+    assert flatten_single_values(('abc',)) == 'abc'
+    assert flatten_single_values(('abc', 'xyz')) == ('abc', 'xyz')
+
+
+def test_searches_configs_search_config_registry_as_dict(dummy_request):
+    from snosearch.interfaces import SEARCH_CONFIG
+    search_registry = dummy_request.registry[SEARCH_CONFIG]
+    expected = {
+        'TestConfigItem': {
+            'facets': {
+                'a': 'b'
+            }
+        },
+        'TestingSearchSchema': {
+            'facet_groups': [
+                {
+                    'title': 'Test group',
+                    'facet_fields': ['status', 'name']
+                }
+            ],
+            'facets': {
+                'status': {
+                    'title': 'Status',
+                    'open_on_load': True
+                },
+                'name': {
+                    'title': 'Name'
+                }
+            },
+            'boost_values': {
+                'accession': 1.0,
+                'status': 1.0,
+                'label': 1.0
+            },
+            'columns': {
+                'accession': {
+                    'title': 'Accession'
+                },
+                'status': {
+                    'title': 'Status'
+                }
+            }
+        },
+        'TestingPostPutPatch': {},
+        'TestingSearchSchemaSpecialFacets': {
+            'facets': {
+                'status': {
+                    'title': 'Status',
+                    'type': 'exists'
+                },
+                'read_count': {
+                    'title': 'Read count range',
+                    'type': 'stats'
+                },
+                'name': {
+                    'title': 'Name'
+                }
+            },
+            'boost_values': {
+                'accession': 1.0,
+                'status': 1.0,
+                'label': 1.0
+            },
+            'columns': {
+                'accession': {
+                    'title': 'Accession'
+                },
+                'status': {
+                    'title': 'Status'
+                }
+            },
+            'matrix': {
+                'x': {
+                    'group_by': 'accession'
+                },
+                'y': {
+                    'group_by': ['status', 'name']
+                }
+            }
+        },
+        'TestingDownload': {
+            'columns': {
+                'attachment': {
+                    'title': 'Attachment'
+                }
+            }
+        },
+        'Item': {}
+    }
+    actual = search_registry.as_dict()
+    assert actual == expected
+
+
 def test_searches_configs_search_config_can_update():
     from snosearch.configs import SearchConfig
     from snosearch.configs import SearchConfigRegistry
@@ -341,3 +437,178 @@ def test_searches_configs_search_config_can_update():
     assert registry.get('my-custom-config', empty).facets == {'c': 'd'}
     assert registry.get('my-custom-config', empty).columns == ['x', 'y']
     assert registry.get('my-custom-config', empty).boost_values == {'t': 'z'}
+
+
+def test_searches_configs_to_camel_case():
+    from snosearch.configs import to_camel_case
+    assert to_camel_case('my_custom_name') == 'MyCustomName'
+    assert to_camel_case('aThing') == 'Athing'
+    assert to_camel_case('facets') == 'Facets'
+    assert to_camel_case('') == ''
+
+
+def test_searches_configs_make_name_for_piece():
+    from snosearch.configs import make_name_for_piece
+    class MyCustomItem:
+        schema = {
+            'facets': {'a': 'b'},
+            'columns': ['x', 'y'],
+        }
+    assert make_name_for_piece(MyCustomItem, 'facets') == 'MyCustomItemFacets'
+    assert make_name_for_piece(MyCustomItem, 'facet_groups') == 'MyCustomItemFacetGroups'
+
+
+def test_searches_configs_extract_piece_from_item_pieces():
+    from snosearch.configs import extract_piece_from_item_pieces
+    class MyCustomItem:
+        schema = {
+            'facets': {'a': 'b'},
+            'columns': ['x', 'y'],
+        }
+    assert extract_piece_from_item_pieces(MyCustomItem.schema, 'facets') == {
+        'facets': {'a': 'b'},
+    }
+    assert extract_piece_from_item_pieces(MyCustomItem.schema, 'columns') == {
+        'columns': ['x', 'y'],
+    }
+    assert extract_piece_from_item_pieces(MyCustomItem.schema, 'nothing') == {}
+
+
+def test_searches_configs_search_config_values_from_item():
+    from snosearch.configs import SearchConfig
+    class MyCustomItem:
+        schema = {
+            'facets': {'a': 'b'},
+            'columns': ['x', 'y'],
+        }
+    values = SearchConfig._values_from_item(MyCustomItem)
+    assert values == MyCustomItem.schema
+    class AbstractItem:
+        schema = None
+    values = SearchConfig._values_from_item(AbstractItem)
+    assert values is None
+
+
+def test_searches_configs_search_config_from_item():
+    from snosearch.configs import SearchConfig
+    class MyCustomItem:
+        schema = {
+            'facets': {'a': 'b'},
+            'columns': ['x', 'y'],
+            'other': {'not': 'this'},
+        }
+    mci = MyCustomItem
+    config = SearchConfig.from_item(mci)
+    assert config.name == 'MyCustomItem'
+    assert config._kwargs == {
+        'facets': {'a': 'b'},
+        'columns': ['x', 'y'],
+    }
+
+
+def test_searches_configs_search_config_from_item_piece():
+    from snosearch.configs import SearchConfig
+    class MyCustomItem:
+        schema = {
+            'facets': {'a': 'b'},
+            'columns': ['x', 'y'],
+            'other': {'not': 'this'},
+            'facet_groups': ['t', 'z'],
+        }
+    mci = MyCustomItem
+    config = SearchConfig.from_item_piece(mci, 'columns')
+    assert config.name == 'MyCustomItemColumns'
+    assert config._kwargs == {
+        'columns': ['x', 'y'],
+    }
+    assert len(config) == 1
+    config = SearchConfig.from_item_piece(mci, 'facets')
+    assert config.name == 'MyCustomItemFacets'
+    assert config._kwargs == {
+        'facets': {'a': 'b'},
+    }
+    assert len(config) == 1
+    config = SearchConfig.from_item_piece(mci, 'facet_groups')
+    assert config.name == 'MyCustomItemFacetGroups'
+    assert config._kwargs == {
+        'facet_groups': ['t', 'z'],
+    }
+    assert len(config) == 1
+    config = SearchConfig.from_item_piece(mci, 'other')
+    assert config.name == 'MyCustomItemOther'
+    assert config._kwargs == {}
+    class AbstractItem:
+        schema = None
+    config = SearchConfig.from_item_piece(AbstractItem, 'facets')
+    assert len(config) == 0
+
+
+def test_searches_configs_search_config_registry_register_from_item():
+    from snosearch.configs import SearchConfig
+    from snosearch.configs import SearchConfigRegistry
+    registry = SearchConfigRegistry()
+    class MyCustomItem:
+        schema = {
+            'facets': {'a': 'b'},
+            'columns': ['x', 'y'],
+            'other': {'not': 'this'},
+            'facet_groups': ['t', 'z'],
+        }
+    registry.register_from_item(MyCustomItem)
+    assert len(registry.registry.as_dict()) == 1
+    config = registry.get('MyCustomItem')
+    assert config.name == 'MyCustomItem'
+    assert config._kwargs == {
+        'facets': {'a': 'b'},
+        'columns': ['x', 'y'],
+        'facet_groups': ['t', 'z']
+    }
+    assert len(config) == 3
+
+
+def test_searches_configs_search_config_registry_register_pieces_from_item():
+    from snosearch.configs import SearchConfig
+    from snosearch.configs import SearchConfigRegistry
+    registry = SearchConfigRegistry()
+    class MyCustomItem:
+        schema = {
+            'facets': {'a': 'b'},
+            'columns': ['x', 'y'],
+            'other': {'not': 'this'},
+            'facet_groups': ['t', 'z'],
+        }
+    registry.register_pieces_from_item(MyCustomItem)
+    assert len(registry.registry.as_dict()) == 3
+    registry.register_from_item(MyCustomItem)
+    assert len(registry.registry.as_dict()) == 4
+    config = registry.get('MyCustomItemFacets')
+    assert config.name == 'MyCustomItemFacets'
+    assert config._kwargs == {
+        'facets': {'a': 'b'},
+    }
+    assert len(config) == 1
+    config = registry.get('MyCustomItemFacetGroups')
+    assert config.name == 'MyCustomItemFacetGroups'
+    assert config._kwargs == {
+        'facet_groups': ['t', 'z'],
+    }
+    assert len(config) == 1
+    config = registry.get('MyCustomItemColumns')
+    assert config.name == 'MyCustomItemColumns'
+    assert config._kwargs == {
+        'columns': ['x', 'y'],
+    }
+    config = registry.get('MyCustomItem')
+    assert config.name == 'MyCustomItem'
+    assert config._kwargs == {
+        'facets': {'a': 'b'},
+        'columns': ['x', 'y'],
+        'facet_groups': ['t', 'z']
+    }
+    assert len(config) == 3
+    class TypeWithNoPieces:
+        schema = {}
+    registry = SearchConfigRegistry()
+    assert len(registry.registry.as_dict()) == 0
+    registry.register_pieces_from_item(TypeWithNoPieces)
+    assert len(registry.registry.as_dict()) == 0

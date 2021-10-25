@@ -91,6 +91,12 @@ def get_search_config():
     return SearchConfig
 
 
+def flatten_single_values(values):
+    if len(values) == 1:
+        return values[0]
+    return values
+
+
 class SearchConfigRegistry:
 
     def __init__(self):
@@ -125,6 +131,13 @@ class SearchConfigRegistry:
     def register_from_item(self, item):
         config = get_search_config().from_item(item)
         self.update(config)
+
+    def register_pieces_from_item(self, item):
+        config_factory = get_search_config()
+        for piece in config_factory.PIECES_KEYS:
+            config = config_factory.from_item_piece(item, piece)
+            if len(config) > 0:
+                self.update(config)
 
     def clear(self):
         self._initialize_storage()
@@ -164,11 +177,36 @@ class SearchConfigRegistry:
             if config
         ]
 
+    def as_dict(self):
+        return {
+            flatten_single_values(name): dict(config.items())
+            for name, config in self.registry.as_dict().items()
+        }
+
 
 class MutableConfig(Config):
 
     def update(self, **kwargs):
         self._kwargs.update(kwargs)
+
+
+def to_camel_case(name):
+    return ''.join(
+        value.title()
+        for value in name.split('_')
+    )
+
+
+def make_name_for_piece(item, piece):
+    return f'{item.__name__}{to_camel_case(piece)}'
+
+
+def extract_piece_from_item_pieces(item_pieces, piece):
+    return {
+        k: v
+        for k, v in item_pieces.items()
+        if k == piece
+    }
 
 
 class SearchConfig(MutableConfig):
@@ -180,6 +218,11 @@ class SearchConfig(MutableConfig):
         'boost_values',
         'matrix',
         'fields',
+        'facet_groups',
+    ]
+    PIECES_KEYS = [
+        'facets',
+        'columns',
         'facet_groups',
     ]
 
@@ -201,12 +244,27 @@ class SearchConfig(MutableConfig):
         super().__getattr__(attr)
 
     @classmethod
+    def _values_from_item(cls, item):
+        return getattr(
+            item,
+            cls.ITEM_CONFIG_LOCATION,
+            {}
+        )
+
+    @classmethod
     def from_item(cls, item):
         return cls(
             item.__name__,
-            getattr(
-                item,
-                cls.ITEM_CONFIG_LOCATION,
-                {}
+            cls._values_from_item(item)
+        )
+
+    @classmethod
+    def from_item_piece(cls, item, piece):
+        item_pieces = cls._values_from_item(item) or {}
+        return cls(
+            make_name_for_piece(item, piece),
+            extract_piece_from_item_pieces(
+                item_pieces,
+                piece,
             )
         )
