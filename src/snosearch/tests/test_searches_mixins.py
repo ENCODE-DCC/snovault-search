@@ -1310,7 +1310,7 @@ def parsed_params(dummy_request):
 @pytest.fixture
 def basic_search_query_factory_with_facets(raw_snowflakes_query, parsed_params):
     from snosearch.queries import BasicSearchQueryFactoryWithFacets
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     bsq = BasicSearchQueryFactoryWithFacets(parsed_params)
     bsq.search = Search().from_dict(raw_snowflakes_query)
     return bsq
@@ -1319,7 +1319,7 @@ def basic_search_query_factory_with_facets(raw_snowflakes_query, parsed_params):
 @pytest.fixture
 def basic_matrix_query_factory_with_facets(raw_matrix_query, parsed_params):
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     bmq = BasicMatrixQueryFactoryWithFacets(parsed_params)
     bmq.search = Search().from_dict(raw_matrix_query)
     return bmq
@@ -1328,7 +1328,7 @@ def basic_matrix_query_factory_with_facets(raw_matrix_query, parsed_params):
 @pytest.fixture
 def basic_query_response_with_facets(raw_response, basic_search_query_factory_with_facets):
     from snosearch.responses import BasicQueryResponseWithFacets
-    from elasticsearch_dsl.response import Response, AggResponse
+    from opensearch_dsl.response import Response, AggResponse
     basic_search_query_factory_with_facets.search._response = Response(
         basic_search_query_factory_with_facets.search,
         raw_response
@@ -1349,7 +1349,7 @@ def basic_query_response_with_facets(raw_response, basic_search_query_factory_wi
 @pytest.fixture
 def basic_matrix_response_with_facets(raw_matrix_response, basic_matrix_query_factory_with_facets):
     from snosearch.responses import BasicMatrixResponseWithFacets
-    from elasticsearch_dsl.response import Response, AggResponse
+    from opensearch_dsl.response import Response, AggResponse
     basic_matrix_query_factory_with_facets.search._response = Response(
         basic_matrix_query_factory_with_facets.search,
         raw_matrix_response
@@ -1370,7 +1370,7 @@ def basic_matrix_response_with_facets(raw_matrix_response, basic_matrix_query_fa
 @pytest.fixture
 def raw_query_response_with_facets(raw_response, basic_search_query_factory_with_facets):
     from snosearch.responses import RawQueryResponseWithAggs
-    from elasticsearch_dsl.response import Response, AggResponse
+    from opensearch_dsl.response import Response, AggResponse
     basic_search_query_factory_with_facets.search._response = Response(
         basic_search_query_factory_with_facets.search,
         raw_response
@@ -1915,7 +1915,7 @@ def test_searches_mixins_hits_to_graph_mixin_scan(
         raw_response,
         mocker
 ):
-    from elasticsearch_dsl.response import Response
+    from opensearch_dsl.response import Response
     from types import GeneratorType
     from snosearch.queries import BasicSearchQueryFactoryWithFacets
     mocker.patch.object(BasicSearchQueryFactoryWithFacets, '_limit_is_all')
@@ -1934,7 +1934,7 @@ def test_searches_mixins_hits_to_graph_mixin_get_results(
         raw_response,
         mocker
 ):
-    from elasticsearch_dsl.response import Response
+    from opensearch_dsl.response import Response
     from snosearch.queries import BasicSearchQueryFactoryWithFacets
     mocker.patch.object(BasicSearchQueryFactoryWithFacets, '_should_scan_over_results')
     mocker.patch.object(BasicSearchQueryFactoryWithFacets, '_limit_is_all')
@@ -1990,7 +1990,7 @@ def test_searches_mixins_hits_to_graph_mixin_to_graph_scan_with_limit(
         mocker
 ):
     from snosearch.queries import BasicSearchQueryFactoryWithFacets
-    from elasticsearch_dsl.search import Search
+    from opensearch_dsl.search import Search
     mocker.patch.object(BasicSearchQueryFactoryWithFacets, '_should_scan_over_results')
     mocker.patch.object(BasicSearchQueryFactoryWithFacets, '_limit_is_all')
     mocker.patch.object(BasicSearchQueryFactoryWithFacets, '_get_limit_value_as_int')

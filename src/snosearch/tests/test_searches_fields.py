@@ -18,7 +18,7 @@ def dummy_parent(request, pyramid_dummy_request, flask_dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
     from snosearch.interfaces import ELASTIC_SEARCH
-    from elasticsearch import Elasticsearch
+    from opensearchpy import OpenSearch as Elasticsearch
     dummy_request.registry[ELASTIC_SEARCH] = Elasticsearch()
     dummy_request.context = DummyResource()
     dummy_request.context.__acl__ = lambda: [(Allow, 'group.submitter', 'search_audit')]
@@ -96,7 +96,7 @@ def test_searches_fields_basic_search_response_field_init():
 )
 def test_searches_fields_basic_search_response_build_query(dummy_parent):
     from snosearch.fields import BasicSearchResponseField
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     brf = BasicSearchResponseField()
     brf.parent = dummy_parent
     brf._build_query()
@@ -125,7 +125,7 @@ def test_searches_fields_basic_search_response_register_query(dummy_parent):
     indirect=True
 )
 def test_searches_fields_basic_search_response_execute_query(dummy_parent, mocker):
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     mocker.patch.object(Search, 'execute')
     Search.execute.return_value = []
     from snosearch.fields import BasicSearchResponseField
@@ -142,7 +142,7 @@ def test_searches_fields_basic_search_response_execute_query(dummy_parent, mocke
     indirect=True
 )
 def test_searches_fields_basic_search_response_format_results(dummy_parent, mocker):
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     mocker.patch.object(Search, 'execute')
     Search.execute.return_value = []
     from snosearch.fields import BasicSearchResponseField
@@ -163,7 +163,7 @@ def test_searches_fields_basic_search_response_format_results(dummy_parent, mock
     indirect=True
 )
 def test_searches_fields_basic_search_response_render(dummy_parent, mocker):
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     mocker.patch.object(Search, 'execute')
     Search.execute.return_value = []
     from snosearch.fields import BasicSearchResponseField
@@ -189,7 +189,7 @@ def test_searches_fields_basic_search_with_facets_response_field_init():
 )
 def test_searches_fields_basic_search_with_facets_response_build_query(dummy_parent):
     from snosearch.fields import BasicSearchWithFacetsResponseField
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     brf = BasicSearchWithFacetsResponseField()
     brf.parent = dummy_parent
     brf._build_query()
@@ -218,7 +218,7 @@ def test_searches_fields_basic_search_with_facets_response_register_query(dummy_
     indirect=True
 )
 def test_searches_fields_basic_search_with_facets_response_execute_query(dummy_parent, mocker):
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     mocker.patch.object(Search, 'execute')
     Search.execute.return_value = []
     from snosearch.fields import BasicSearchWithFacetsResponseField
@@ -235,7 +235,7 @@ def test_searches_fields_basic_search_with_facets_response_execute_query(dummy_p
     indirect=True
 )
 def test_searches_fields_basic_search_with_facets_response_format_results(dummy_parent, mocker):
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     mocker.patch.object(Search, 'execute')
     Search.execute.return_value = mocker.MagicMock()
     from snosearch.fields import BasicSearchWithFacetsResponseField
@@ -266,7 +266,7 @@ def test_searches_fields_basic_search_without_facets_response_field_init():
 )
 def test_searches_fields_basic_search_without_facets_response_build_query(dummy_parent):
     from snosearch.fields import BasicSearchWithoutFacetsResponseField
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     brf = BasicSearchWithoutFacetsResponseField()
     brf.parent = dummy_parent
     brf._build_query()
@@ -286,7 +286,7 @@ def test_searches_fields_cached_facets_response_field_init():
 )
 def test_searches_fields_cached_facets_response_field_build_query(dummy_parent):
     from snosearch.fields import CachedFacetsResponseField
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     cfrf = CachedFacetsResponseField()
     cfrf.parent = dummy_parent
     cfrf._build_query()
@@ -309,7 +309,7 @@ def test_searches_fields_collection_search_with_facets_response_build_query(dumm
     from snosearch.fields import CollectionSearchQueryFactoryWithFacets
     context = dummy_parent._meta['params_parser']._request.registry['types']['TestingSearchSchema']
     dummy_parent._meta['params_parser']._request.context = context
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     crf = CollectionSearchWithFacetsResponseField()
     crf.parent = dummy_parent
     crf._build_query()
@@ -325,7 +325,7 @@ def test_searches_fields_collection_search_with_facets_response_build_query(dumm
 def test_searches_fields_basic_report_with_facets_response_build_query(dummy_parent):
     from snosearch.fields import BasicReportWithFacetsResponseField
     from snosearch.queries import BasicReportQueryFactoryWithFacets
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     brf = BasicReportWithFacetsResponseField()
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&assay_title=Histone+ChIP-seq&award.project=Roadmap'
@@ -345,7 +345,7 @@ def test_searches_fields_basic_report_with_facets_response_build_query(dummy_par
 def test_searches_fields_basic_report_without_facets_response_build_query(dummy_parent):
     from snosearch.fields import BasicReportWithoutFacetsResponseField
     from snosearch.queries import BasicReportQueryFactoryWithoutFacets
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     brf = BasicReportWithoutFacetsResponseField()
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&assay_title=Histone+ChIP-seq&award.project=Roadmap'
@@ -891,7 +891,6 @@ def test_searches_fields_debug_query_response_field(dummy_parent, mocker):
     from snosearch.fields import DebugQueryResponseField
     dbr = DebugQueryResponseField()
     r = dbr.render(parent=dummy_parent)
-    assert 'query' in r['debug']['raw_query']
     assert 'post_filter' in r['debug']['raw_query']
 
 
@@ -933,7 +932,7 @@ def test_searches_fields_sort_response_field_remove_prefix(dummy_parent):
 )
 def test_searches_fields_sort_response_field_maybe_add_sort(dummy_parent):
     from snosearch.fields import SortResponseField
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     s = Search().from_dict(
         {'query': {'match_all': {}}, 'sort': [{'embedded.y': {'order': 'desc'}}]}
     )
@@ -958,7 +957,7 @@ def test_searches_fields_raw_matrix_with_aggs_response_field_init():
 def test_searches_fields_raw_matrix_with_aggs_response_field_build_query(dummy_parent):
     from snosearch.fields import RawMatrixWithAggsResponseField
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
     )
@@ -983,7 +982,7 @@ def test_searches_fields_raw_top_hits_response_field_init():
 def test_searches_fields_raw_top_hits_response_field_build_query(dummy_parent):
     from snosearch.fields import RawTopHitsResponseField
     from snosearch.queries import TopHitsQueryFactory
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
     )
@@ -1008,7 +1007,7 @@ def test_searches_fields_basic_matrix_with_facets_response_field_init():
 def test_searches_fields_basic_matrix_with_facets_response_field_build_query(dummy_parent):
     from snosearch.fields import BasicMatrixWithFacetsResponseField
     from snosearch.queries import BasicMatrixQueryFactoryWithFacets
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
     )
@@ -1026,7 +1025,7 @@ def test_searches_fields_basic_matrix_with_facets_response_field_build_query(dum
 )
 def test_searches_fields_basic_matrix_with_facets_response_field_execute_query(dummy_parent, mocker):
     from snosearch.fields import BasicMatrixWithFacetsResponseField
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     mocker.patch.object(Search, 'execute')
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
@@ -1052,7 +1051,7 @@ def test_searches_fields_missing_matrix_with_facets_response_field_init():
 def test_searches_fields_missing_matrix_with_facets_response_field_build_query(dummy_parent):
     from snosearch.fields import MissingMatrixWithFacetsResponseField
     from snosearch.queries import MissingMatrixQueryFactoryWithFacets
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
     )
@@ -1120,7 +1119,7 @@ def test_searches_fields_audit_matrix_with_facets_response_field_init():
 def test_searches_fields_audit_matrix_with_facets_response_field_build_query(dummy_parent):
     from snosearch.fields import AuditMatrixWithFacetsResponseField
     from snosearch.queries import AuditMatrixQueryFactoryWithFacets
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'
     )
@@ -1138,7 +1137,7 @@ def test_searches_fields_audit_matrix_with_facets_response_field_build_query(dum
 )
 def test_searches_fields_audit_matrix_with_facets_response_field_execute_query(dummy_parent, mocker):
     from snosearch.fields import AuditMatrixWithFacetsResponseField
-    from elasticsearch_dsl import Search
+    from opensearch_dsl import Search
     mocker.patch.object(Search, 'execute')
     dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
         'type=TestingSearchSchema&status=released'

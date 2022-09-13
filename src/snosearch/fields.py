@@ -145,7 +145,7 @@ class BasicSearchWithFacetsResponseField(BasicSearchResponseField):
             {
                 GRAPH: self.results.to_graph(),
                 FACETS: self.results.to_facets(),
-                TOTAL: self.results.results.hits.total
+                TOTAL: self.results.results.hits.total.value
             }
         )
 
@@ -166,7 +166,7 @@ class BasicSearchWithoutFacetsResponseField(BasicSearchResponseField):
         self.response.update(
             {
                 GRAPH: self.results.to_graph(),
-                TOTAL: self.results.results.hits.total
+                TOTAL: self.results.results.hits.total.value
             }
         )
 
