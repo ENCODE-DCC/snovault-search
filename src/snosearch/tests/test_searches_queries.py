@@ -4457,6 +4457,22 @@ def test_searches_queries_abstract_query_factory_add_slice(params_parser, dummy_
     assert aq.search.to_dict() == {'from': 0, 'size': 100000}
 
 
+pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
+def test_searches_queries_abstract_query_factory_add_exact_counting(params_parser, mocker):
+    from snosearch.queries import AbstractQueryFactory
+    aq = AbstractQueryFactory(params_parser)
+    mocker.patch.object(AbstractQueryFactory, '_get_index')
+    aq.add_exact_counting()
+    assert aq.search.to_dict().get('track_total_hits') is True
+
+
 @pytest.mark.parametrize(
     'params_parser_snovault_types',
     integrations,
@@ -5993,7 +6009,8 @@ def test_searches_queries_basic_matrix_query_factory_with_facets_build_query(par
                 ]
             }
         },
-        'size': 0
+        'size': 0,
+        'track_total_hits': True
     }
     actual = bmqf.search.to_dict()
     assert set(actual.keys()) == set(expected.keys())
