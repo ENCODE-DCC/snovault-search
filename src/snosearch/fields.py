@@ -300,7 +300,7 @@ class BasicMatrixWithFacetsResponseField(RawMatrixWithAggsResponseField):
             {
                 FACETS: self.results.to_facets(),
                 MATRIX: self.results.to_matrix(),
-                TOTAL: self.results.results.hits.total
+                TOTAL: self.results.results.hits.total.value
             }
         )
 
