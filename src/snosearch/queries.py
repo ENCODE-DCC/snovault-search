@@ -1319,6 +1319,14 @@ class MissingMatrixQueryFactoryWithFacets(BasicMatrixQueryFactoryWithFacets):
         ]
 
 
+class MultitypeMissingMatrixQueryFactoryWithFacets(MissingMatrixQueryFactoryWithFacets):
+    '''
+    Like MissingMatrixQueryFactoryWithFacets but allows multiple item types in the query.
+    '''
+    def _get_item_types(self):
+        return super(BasicMatrixQueryFactoryWithFacets, self)._get_item_types()
+
+
 class AuditMatrixQueryFactoryWithFacets(BasicMatrixQueryFactoryWithFacets):
     '''
     Like BasicMatrixQueryFactoryWithFacets but adds aggregation for all audit fields.
