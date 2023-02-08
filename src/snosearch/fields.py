@@ -39,6 +39,7 @@ from .queries import BasicReportQueryFactoryWithoutFacets
 from .queries import CachedFacetsQueryFactory
 from .queries import CollectionSearchQueryFactoryWithFacets
 from .queries import MissingMatrixQueryFactoryWithFacets
+from .queries import MultitypeMissingMatrixQueryFactoryWithFacets
 from .responses import AuditMatrixResponseWithFacets
 from .queries import TopHitsQueryFactory
 from .responses import BasicMatrixResponseWithFacets
@@ -313,6 +314,20 @@ class MissingMatrixWithFacetsResponseField(BasicMatrixWithFacetsResponseField):
 
     def _build_query(self):
         self.query_builder = MissingMatrixQueryFactoryWithFacets(
+            params_parser=self.get_params_parser(),
+            **self.kwargs
+        )
+        self.query = self.query_builder.build_query()
+
+
+class MultitypeMissingMatrixWithFacetsResponseField(MissingMatrixWithFacetsResponseField):
+    '''
+    Like MissingMatrixWithFacetsResponseField but uses MultitypeMissingMatrixQueryFactoryWithFacets
+    query.
+    '''
+
+    def _build_query(self):
+        self.query_builder = MultitypeMissingMatrixQueryFactoryWithFacets(
             params_parser=self.get_params_parser(),
             **self.kwargs
         )

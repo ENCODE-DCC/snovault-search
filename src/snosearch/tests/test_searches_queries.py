@@ -6383,6 +6383,42 @@ def test_searches_queries_missing_matrix_query_factory_with_facets_add_matrix_ag
     integrations,
     indirect=True
 )
+def test_searches_queries_multitype_missing_matrix_query_factory_with_facets_init(params_parser):
+    from snosearch.queries import MultitypeMissingMatrixQueryFactoryWithFacets
+    mmmqf = MultitypeMissingMatrixQueryFactoryWithFacets(params_parser)
+    assert isinstance(mmmqf, MultitypeMissingMatrixQueryFactoryWithFacets)
+    assert mmmqf.params_parser == params_parser
+
+
+@pytest.mark.parametrize(
+    'params_parser, dummy_request',
+    [
+        ('pyramid', 'pyramid'),
+        ('flask', 'flask')
+    ],
+    indirect=True
+)
+def test_searches_queries_multitype_missing_matrix_query_factory_with_facets_parse_name_and_default_value_from_name(params_parser, dummy_request):
+    from snosearch.queries import MultitypeMissingMatrixQueryFactoryWithFacets
+    from elasticsearch_dsl.aggs import Terms
+    dummy_request.environ['QUERY_STRING'] = (
+        'type=TestingSearchSchema&status=released'
+        '&limit=10&field=@id&field=accession&mode=picker'
+    )
+    mmqf = MultitypeMissingMatrixQueryFactoryWithFacets(params_parser)
+    name, default_value = mmqf._parse_name_and_default_value_from_name('perturbation_type')
+    assert name == 'perturbation_type'
+    assert default_value is None
+    name, default_value = mmqf._parse_name_and_default_value_from_name(('perturbation_type', 'no_perturbation'))
+    assert name == 'perturbation_type'
+    assert default_value == 'no_perturbation'
+
+
+@pytest.mark.parametrize(
+    'params_parser',
+    integrations,
+    indirect=True
+)
 def test_searches_queries_audit_matrix_query_factory_with_facets_init(params_parser):
     from snosearch.queries import AuditMatrixQueryFactoryWithFacets
     amqf = AuditMatrixQueryFactoryWithFacets(params_parser)

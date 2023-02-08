@@ -1063,6 +1063,31 @@ def test_searches_fields_missing_matrix_with_facets_response_field_build_query(d
     assert isinstance(mmwf.query_builder, MissingMatrixQueryFactoryWithFacets)
 
 
+def test_searches_fields_multitype_missing_matrix_with_facets_response_field_init():
+    from snosearch.fields import MultitypeMissingMatrixWithFacetsResponseField
+    mmmwf = MultitypeMissingMatrixWithFacetsResponseField()
+    assert isinstance(mmmwf, MultitypeMissingMatrixWithFacetsResponseField)
+
+
+@pytest.mark.parametrize(
+    'dummy_parent',
+    integrations,
+    indirect=True
+)
+def test_searches_fields_multitype_missing_matrix_with_facets_response_field_build_query(dummy_parent):
+    from snosearch.fields import MultitypeMissingMatrixWithFacetsResponseField
+    from snosearch.queries import MultitypeMissingMatrixQueryFactoryWithFacets
+    from elasticsearch_dsl import Search
+    dummy_parent._meta['params_parser']._request.environ['QUERY_STRING'] = (
+        'type=TestingSearchSchema&status=released'
+    )
+    mmmwf = MultitypeMissingMatrixWithFacetsResponseField()
+    mmmwf.parent = dummy_parent
+    mmmwf._build_query()
+    assert isinstance(mmmwf.query, Search)
+    assert isinstance(mmmwf.query_builder, MultitypeMissingMatrixQueryFactoryWithFacets)
+
+
 @pytest.mark.parametrize(
     'dummy_parent',
     integrations,
